@@ -4,10 +4,10 @@
 
 void reset_cpu(struct pico_cpu *cpu)
 {
-    cpu->status.carry_flag = 0;
-    cpu->status.zero_confition = 0;
-    cpu->status.overflow_flag = 0;
-    cpu->status.negative_condition = 0;
+    cpu->registers.status.carry_flag = 0;
+    cpu->registers.status.zero_condition = 0;
+    cpu->registers.status.overflow_flag = 0;
+    cpu->registers.status.negative_condition = 0;
 
     cpu->registers.LR = 0;
     cpu->registers.PC = 0;

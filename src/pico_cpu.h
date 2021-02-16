@@ -9,7 +9,7 @@
 struct APS_Register
 {
     uint8_t negative_condition : 1;
-    uint8_t zero_confition : 1;
+    uint8_t zero_condition  : 1;
     uint8_t carry_flag : 1;
     uint8_t overflow_flag : 1;
 
@@ -23,6 +23,7 @@ struct pico_register
     uint32_t SP;                           // stack pointer
     uint32_t LR;                           // link register
     uint32_t PC;                           // programm counter
+    struct APS_Register status;
 };
 
 struct pico_cpu
@@ -30,7 +31,6 @@ struct pico_cpu
     int core_id;
     struct rasp_pico_memory memory;
     struct pico_register registers;
-    struct APS_Register status;
 };
 
 void dump_cpu(const struct pico_cpu *cpu);

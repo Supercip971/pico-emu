@@ -22,6 +22,7 @@ bool read_rom_8(pico_rom_t *rom, pico_addr raw_addr, uint8_t *target)
     *target = *v;
     return true;
 }
+
 bool read_rom_16(pico_rom_t *rom, pico_addr raw_addr, uint16_t *target)
 {
     if (raw_addr % 2 != 0)
@@ -32,6 +33,7 @@ bool read_rom_16(pico_rom_t *rom, pico_addr raw_addr, uint16_t *target)
     *target = *v;
     return true;
 }
+
 bool read_rom_32(pico_rom_t *rom, pico_addr raw_addr, uint32_t *target)
 {
     if (raw_addr % 4 != 0)
