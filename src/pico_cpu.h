@@ -27,6 +27,7 @@ struct pico_register
 
 struct pico_cpu
 {
+    int core_id;
     struct rasp_pico_memory memory;
     struct pico_register registers;
     struct APS_Register status;
@@ -36,7 +37,7 @@ struct pico_cpu
 void dump_cpu(const struct pico_cpu *cpu);
 void reset_cpu(struct pico_cpu *cpu);
 uint8_t fetch_byte(struct pico_cpu *cpu);
-bool start_cpu(struct pico_cpu *cpu);
+bool start_cpu(struct pico_cpu *cpu, int cpu_id);
 
 #define READ_MEMORY_SUCCESS 0
 #define READ_MEMORY_OOB -1

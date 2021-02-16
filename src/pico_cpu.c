@@ -50,9 +50,12 @@ bool init_bootrom_table(struct pico_cpu *cpu)
     return true;
 }
 
-bool start_cpu(struct pico_cpu *cpu)
+bool start_cpu(struct pico_cpu *cpu, int cpu_id)
 {
+    cpu->core_id = cpu_id;
     init_bootrom_table(cpu);
+ 
+    printf("started cpu: %i \n", cpu_id);
     return true;
 }
 
