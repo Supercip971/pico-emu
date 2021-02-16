@@ -25,4 +25,7 @@ typedef uint32_t pico_addr;
 // 133 Mhz
 #define CPU_CLOCK_SPEED 139460608
 
+// single cycle io block
+#define PICO_SIO_START 0xd0000000
+#define PICO_SIO_LENGTH 0xfffffff
 #endif

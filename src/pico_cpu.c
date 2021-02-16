@@ -1,4 +1,5 @@
 #include "pico_cpu.h"
+#include "sio_reg.h"
 #include <stdio.h>
 
 void reset_cpu(struct pico_cpu *cpu)
@@ -152,6 +153,14 @@ int read_memory_dword(struct pico_cpu *cpu, uint32_t*target, pico_addr addr)
     {
         printf("can't read flash memory for the moment \n");
         dump_cpu(cpu);
+        return READ_MEMORY_FLASH_ERROR;
+    }
+    // reading SIO
+    else if (addr >= PICO_SIO_START && addr < PICO_SIO_START + PICO_SIO_LENGTH)
+    {
+        if(!read_sio_32(cpu, addr - PICO_SIO_START, target)){
+            return READ_MEMORY_SIO_ERROR;
+        }
         return READ_MEMORY_FLASH_ERROR;
     }
     else
