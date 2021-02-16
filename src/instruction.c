@@ -1,4 +1,5 @@
 #include "instruction.h"
+
 #include "instruction/instruction_list.h"
 #include <stdio.h>
 
@@ -19,6 +20,9 @@ uint8_t run_instruction(struct pico_cpu *cpu)
     else if ((second & 0b11111000) == 0b01101000)
     { // LDR (immediate) instruction
         return ldr_immediate_instruction(raw_instruction, cpu);
+    }else if ((second & 0b11111000) == 0b00101000)
+    { // CMP (immediate) instruction
+        return cmp_immediate(raw_instruction, cpu);
     }
     printf("invalid instruction %x at %x \n ", instruction, cpu->registers.PC - 2);
     return 0;
