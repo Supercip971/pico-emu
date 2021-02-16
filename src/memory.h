@@ -6,7 +6,7 @@
 #include <stdint.h>
 struct memory_sram
 {
-    uint8_t raw[PICO_SRAM_SIZE]  __attribute__((aligned(4)));
+    uint8_t raw[PICO_SRAM_SIZE] __attribute__((aligned(4)));
 };
 
 int init_sram(struct memory_sram *sram, const char *file_path);

@@ -33,7 +33,6 @@ struct pico_cpu
     struct APS_Register status;
 };
 
-
 void dump_cpu(const struct pico_cpu *cpu);
 void reset_cpu(struct pico_cpu *cpu);
 uint8_t fetch_byte(struct pico_cpu *cpu);
@@ -46,6 +45,6 @@ bool start_cpu(struct pico_cpu *cpu, int cpu_id);
 #define READ_MEMORY_FLASH_ERROR -4
 #define READ_MEMORY_SIO_ERROR -5
 int read_memory_byte(struct pico_cpu *cpu, uint8_t *target, pico_addr addr);
-int read_memory_word(struct pico_cpu *cpu, uint16_t*target, pico_addr addr);
-int read_memory_dword(struct pico_cpu *cpu, uint32_t*target, pico_addr addr);
+int read_memory_word(struct pico_cpu *cpu, uint16_t *target, pico_addr addr);
+int read_memory_dword(struct pico_cpu *cpu, uint32_t *target, pico_addr addr);
 #endif

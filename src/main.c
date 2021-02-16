@@ -1,6 +1,6 @@
 #include "config.h"
-#include "pico_cpu.h"
 #include "instruction.h"
+#include "pico_cpu.h"
 #include "raspberry_pi_pico.h"
 #include <stdio.h>
 #include <stdlib.h>

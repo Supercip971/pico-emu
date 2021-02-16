@@ -4,7 +4,7 @@
 #include <stdbool.h>
 struct pico_rom
 {
-    uint8_t rom_data[PICO_ROM_SIZE]  __attribute__((aligned(4)));
+    uint8_t rom_data[PICO_ROM_SIZE] __attribute__((aligned(4)));
 };
 
 struct pico_bootrom_vector

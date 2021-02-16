@@ -24,8 +24,9 @@ bool read_rom_8(pico_rom_t *rom, pico_addr raw_addr, uint8_t *target)
 }
 bool read_rom_16(pico_rom_t *rom, pico_addr raw_addr, uint16_t *target)
 {
-    if(raw_addr % 2 != 0){
-        printf("warning: trying to read 16bit without aligned addr: 0x%x", raw_addr );
+    if (raw_addr % 2 != 0)
+    {
+        printf("warning: trying to read 16bit without aligned addr: 0x%x", raw_addr);
     }
     uint16_t *v = (uint16_t *)(rom->rom_data + (raw_addr));
     *target = *v;
@@ -33,8 +34,9 @@ bool read_rom_16(pico_rom_t *rom, pico_addr raw_addr, uint16_t *target)
 }
 bool read_rom_32(pico_rom_t *rom, pico_addr raw_addr, uint32_t *target)
 {
-    if(raw_addr % 4 != 0){
-        printf("warning: trying to read 32bit without aligned addr: 0x%x", raw_addr );
+    if (raw_addr % 4 != 0)
+    {
+        printf("warning: trying to read 32bit without aligned addr: 0x%x", raw_addr);
     }
     uint32_t *v = (uint32_t *)(rom->rom_data + (raw_addr));
     *target = *v;

@@ -41,3 +41,6 @@ all: $(OUTPUT)
 
 run: $(OUTPUT)
 	$(OUTPUT)
+
+format: 
+	clang-format -i --style=file $(CFILES) $(HFILES)

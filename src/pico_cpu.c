@@ -55,7 +55,7 @@ bool start_cpu(struct pico_cpu *cpu, int cpu_id)
 {
     cpu->core_id = cpu_id;
     init_bootrom_table(cpu);
- 
+
     printf("started cpu: %i \n", cpu_id);
     return true;
 }
@@ -128,7 +128,7 @@ int read_memory_word(struct pico_cpu *cpu, uint16_t *target, pico_addr addr)
         return READ_MEMORY_OOB;
     }
 }
-int read_memory_dword(struct pico_cpu *cpu, uint32_t*target, pico_addr addr)
+int read_memory_dword(struct pico_cpu *cpu, uint32_t *target, pico_addr addr)
 {
     //reading the rom
     if (addr >= PICO_ROM_ADDR && addr <= PICO_ROM_ADDR + PICO_ROM_SIZE)
@@ -158,7 +158,8 @@ int read_memory_dword(struct pico_cpu *cpu, uint32_t*target, pico_addr addr)
     // reading SIO
     else if (addr >= PICO_SIO_START && addr < PICO_SIO_START + PICO_SIO_LENGTH)
     {
-        if(!read_sio_32(cpu, addr - PICO_SIO_START, target)){
+        if (!read_sio_32(cpu, addr - PICO_SIO_START, target))
+        {
             return READ_MEMORY_SIO_ERROR;
         }
         return READ_MEMORY_FLASH_ERROR;
