@@ -3,6 +3,25 @@
 #include "instruction/instruction_list.h"
 #include <stdio.h>
 
+
+uint8_t run_32bit_instruction(struct pico_cpu *cpu, struct raw_instruction start_instruction){
+    struct raw32_instruction instruction_32;
+    uint32_t third = fetch_byte(cpu);
+    uint32_t fourth = fetch_byte(cpu);
+    instruction_32.value_0_8 = third;
+    instruction_32.value_8_16 = fourth;
+    instruction_32.value_16_24 = start_instruction.down;
+    instruction_32.value_24_32 = start_instruction.up;
+    instruction_32.raw_instruction = ((uint32_t)start_instruction.raw_instruction) << 16;
+    instruction_32.raw_instruction |= third;
+    instruction_32.raw_instruction |= fourth << 8;
+
+    if((instruction_32.value_24_32 & 0b00011000) == 0b00010000 && (instruction_32.value_8_16 & 0b11000000) == 0b11000000){ // 32bit instruction
+        return BL_instruction_t1( instruction_32, cpu);
+    }
+    printf("invalid 32bit instruction %x at %x \n ", instruction_32.raw_instruction , cpu->registers.PC - 2);
+    return 0;
+}
 uint8_t run_instruction(struct pico_cpu *cpu)
 {
     uint8_t first = fetch_byte(cpu);
@@ -12,19 +31,29 @@ uint8_t run_instruction(struct pico_cpu *cpu)
     raw_instruction.up = second;
     raw_instruction.down = first;
     raw_instruction.raw_instruction = instruction;
-
+    // LDR (literal) instruction
     if ((second & 0b11111000) == 0b01001000)
-    { // LDR (literal) instruction
+    { 
         return ldr_litteral_instruction(raw_instruction, cpu);
     }
+    // LDR (immediate) instruction
     else if ((second & 0b11111000) == 0b01101000)
-    { // LDR (immediate) instruction
+    { 
         return ldr_immediate_instruction(raw_instruction, cpu);
-    }else if ((second & 0b11111000) == 0b00101000)
-    { // CMP (immediate) instruction
+    }
+    // CMP (immediate) instruction
+
+    else if ((second & 0b11111000) == 0b00101000)
+    { 
         return cmp_immediate(raw_instruction, cpu);
-    }else if((second & 0b11110000) == 0b11010000){
+    }
+    // branch instruction
+    else if((second & 0b11110000) == 0b11010000){
         return B_instruction_t1(raw_instruction, cpu);
+    }
+    // 32bit instruction
+    else if((second & 0b11100000) == 0b11100000){ // 32bit instruction
+        return run_32bit_instruction( cpu,raw_instruction);
     }
     printf("invalid instruction %x at %x \n ", instruction, cpu->registers.PC - 2);
     return 0;
