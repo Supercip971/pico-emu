@@ -23,6 +23,8 @@ uint8_t run_instruction(struct pico_cpu *cpu)
     }else if ((second & 0b11111000) == 0b00101000)
     { // CMP (immediate) instruction
         return cmp_immediate(raw_instruction, cpu);
+    }else if((second & 0b11110000) == 0b11010000){
+        return B_instruction_t1(raw_instruction, cpu);
     }
     printf("invalid instruction %x at %x \n ", instruction, cpu->registers.PC - 2);
     return 0;

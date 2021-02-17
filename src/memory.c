@@ -42,4 +42,5 @@ bool write_sram_32(struct memory_sram *sram, const pico_addr raw_addr, const uin
     uint32_t *v = (uint32_t *)(sram->raw + (raw_addr));
     *v = target;
     return true;
+    
 }

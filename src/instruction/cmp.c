@@ -16,6 +16,6 @@ uint8_t cmp_immediate(struct raw_instruction instruction, struct pico_cpu *cpu)
 
 
     printf("(immediate) cmp R%i, 0x%x \n", base_register, imm32);
-    printf("  = {C: %i, V: %i, R: %i, Z: %i}", res.carry, res.overflow, res.result, res.result == 0);
+    printf("  = {C: %i, V: %i, R: %i, Z: %i} \n", res.carry, res.overflow, res.result, res.result == 0);
     return 0;
 }

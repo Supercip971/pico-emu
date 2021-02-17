@@ -3,5 +3,8 @@
 #include "../instruction.h"
 #include "../pico_cpu.h"
 #include "ldr.h"
+#include "b.h"
 #include "cmp.h"
+#include <stdbool.h>
+
 #endif
