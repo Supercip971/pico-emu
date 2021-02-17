@@ -13,4 +13,8 @@ struct add_with_carry_result {
 
 uint32_t add_with_carry(uint32_t x, uint32_t y, bool carry, struct add_with_carry_result* target);
 
+
+inline int xor(int x, int y){
+    return x != y;
+}
 #endif
