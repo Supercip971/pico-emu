@@ -21,7 +21,7 @@ uint8_t run_SdiBE_instruction(struct pico_cpu *cpu, struct raw_instruction instr
     
     
     printf("invalid special data  instruction or branch and exchange %x at %x \n ", instruction.raw_instruction , cpu->registers.PC - 2);
-    return 10;
+    return 1;
 }
 uint8_t run_32bit_instruction(struct pico_cpu *cpu, struct raw_instruction start_instruction){
     struct raw32_instruction instruction_32;
@@ -39,7 +39,7 @@ uint8_t run_32bit_instruction(struct pico_cpu *cpu, struct raw_instruction start
         return BL_instruction_t1( instruction_32, cpu);
     }
     printf("invalid 32bit instruction %x at %x \n ", instruction_32.raw_instruction , cpu->registers.PC - 2);
-    return 0;
+    return 1;
 }
 uint8_t run_instruction(struct pico_cpu *cpu)
 {
@@ -74,10 +74,14 @@ uint8_t run_instruction(struct pico_cpu *cpu)
     else if((second & 0b11111100) == 0b01000100){
         return run_SdiBE_instruction(cpu, raw_instruction);
     }
+    // MOVS (mov immediate)
+    else if((second & 0b11111000) == 0b00100000){
+        return mov_immediate(raw_instruction, cpu);
+    }
     // 32bit instruction
     else if((second & 0b11100000) == 0b11100000){ // 32bit instruction
         return run_32bit_instruction( cpu,raw_instruction);
     }
     printf("invalid instruction %x at %x \n ", instruction, cpu->registers.PC - 2);
-    return 0;
+    return 1;
 }

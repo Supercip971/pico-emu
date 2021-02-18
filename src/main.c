@@ -31,9 +31,8 @@ int main(int argc, char **argv)
     printf("resetting pico cpu... \n");
     reset_cpu(&pico);
     start_cpu(&pico, 0);
-    for (int i = 0; i < 7; i++)
-    {
-        run_instruction(&pico);
+    while(run_instruction(&pico) == 0){
+        
     }
     return 0;
 }
