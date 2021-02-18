@@ -1,7 +1,9 @@
 #include "pico_cpu.h"
+#include "pico_rom.h"
 #include "sio_reg.h"
+#include "sram.h"
 #include <stdio.h>
-const char* registers_names[] = { "R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "SP", "LR", "PC"};
+const char *registers_names[] = {"R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "SP", "LR", "PC"};
 void reset_cpu(struct pico_cpu *cpu)
 {
     cpu->registers.status.carry_flag = 0;
@@ -18,25 +20,56 @@ void reset_cpu(struct pico_cpu *cpu)
     }
 }
 
-uint32_t* get_register(uint32_t id, struct pico_register* table){
-    if(id < R_REGISTER_COUNT){
-        
-        return &table->R_register[id] ;
-    }else if(id == 15){
-        
-        return &table->PC ;
-    }else if(id == 14){
-        
-        return &table->LR ;
-    }else if(id == 13){
-        
-        return &table->SP ;
+int init_cpu(struct pico_cpu *cpu, char *file_path)
+{
+    cpu->regions.memory_region_count = 0;
+    if (init_rom(cpu) != 0)
+    {
+        return -2;
     }
-    
+
+    char *utf2_path = file_path;
+    printf("loading sram with file %s \n", utf2_path);
+
+    if (init_sram(utf2_path, cpu) != 0)
+    {
+        return -3;
+    }
+
+    if (init_sio(cpu) != 0)
+    {
+        return -4;
+    };
+    return 0;
+}
+uint32_t *get_register(uint32_t id, struct pico_register *table)
+{
+    if (id < R_REGISTER_COUNT)
+    {
+
+        return &table->R_register[id];
+    }
+    else if (id == 15)
+    {
+
+        return &table->PC;
+    }
+    else if (id == 14)
+    {
+
+        return &table->LR;
+    }
+    else if (id == 13)
+    {
+
+        return &table->SP;
+    }
+
     return NULL;
 }
 
-const char* get_register_name(uint32_t id){
+const char *get_register_name(uint32_t id)
+{
     return registers_names[id];
 }
 
@@ -66,9 +99,9 @@ void dump_cpu(const struct pico_cpu *cpu)
 
 bool init_bootrom_table(struct pico_cpu *cpu)
 {
-    init_boot_rom_vector(&cpu->memory.bootrom_vec, &cpu->memory.boot_rom);
-    cpu->registers.SP = cpu->memory.bootrom_vec.initial_stack - 1;
-    cpu->registers.PC = cpu->memory.bootrom_vec.boot_rom_start - 1;
+    init_boot_rom_vector(&cpu->bootrom_vec, cpu);
+    cpu->registers.SP = cpu->bootrom_vec.initial_stack - 1;
+    cpu->registers.PC = cpu->bootrom_vec.boot_rom_start - 1;
     printf("bootrom table: start = 0x%x stack = 0x%x \n", cpu->registers.PC, cpu->registers.SP);
     return true;
 }
@@ -84,214 +117,92 @@ bool start_cpu(struct pico_cpu *cpu, int cpu_id)
 // this is terrible: todo fix this code
 int read_memory_byte(struct pico_cpu *cpu, uint8_t *target, pico_addr addr)
 {
-    //reading the rom
-    if (addr >= PICO_ROM_ADDR && addr <= PICO_ROM_ADDR + PICO_ROM_SIZE)
+    struct memory_region *res = get_memory_region(&cpu->regions, addr);
+    if (res == NULL)
     {
-        if (!read_rom_8(&cpu->memory.boot_rom, addr - PICO_ROM_ADDR, target))
-        {
-            return READ_MEMORY_ROM_ERROR;
-        }
-        return READ_MEMORY_SUCCESS;
-    }
-    //reading sram
-    else if (addr >= PICO_SRAM_ADDR && addr <= PICO_SRAM_ADDR + PICO_SRAM_SIZE)
-    {
-        if (!read_sram_8(&cpu->memory.sram, addr - PICO_SRAM_ADDR, target))
-        {
-            return READ_MEMORY_ROM_ERROR;
-        }
-        return READ_MEMORY_SUCCESS;
-    }
-    // reading flash
-    else if (addr > PICO_FLASH_MEMORY_ADDR && addr < PICO_FLASH_MEMORY_ADDR + PICO_FLASH_MEMORY_SIZE)
-    {
-        printf("can't read flash memory for the moment \n");
-        dump_cpu(cpu);
-        return READ_MEMORY_FLASH_ERROR;
-    }
-    else
-    {
-        printf("error: cpu trying to read out of bound memory address 0x%x \n", addr);
-        dump_cpu(cpu);
+        printf("trying to read OOB memory %x \n", addr);
         return READ_MEMORY_OOB;
     }
+    else if (!res->can_read)
+    {
+        printf("trying to read memory that can't be readed %s at %x \n", res->name, addr - res->start);
+        return READ_MEMORY_WO_ERROR;
+    }
+    return res->read8(addr - res->start, cpu, target, res);
 }
 int read_memory_word(struct pico_cpu *cpu, uint16_t *target, pico_addr addr)
 {
-    //reading the rom
-    if (addr >= PICO_ROM_ADDR && addr <= PICO_ROM_ADDR + PICO_ROM_SIZE)
+    struct memory_region *res = get_memory_region(&cpu->regions, addr);
+    if (res == NULL)
     {
-        if (!read_rom_16(&cpu->memory.boot_rom, addr - PICO_ROM_ADDR, target))
-        {
-            return READ_MEMORY_ROM_ERROR;
-        }
-        return READ_MEMORY_SUCCESS;
-    }
-    //reading sram
-    else if (addr >= PICO_SRAM_ADDR && addr <= PICO_SRAM_ADDR + PICO_SRAM_SIZE)
-    {
-        if (!read_sram_16(&cpu->memory.sram, addr - PICO_SRAM_ADDR, target))
-        {
-            return READ_MEMORY_ROM_ERROR;
-        }
-        return READ_MEMORY_SUCCESS;
-    }
-    // reading flash
-    else if (addr > PICO_FLASH_MEMORY_ADDR && addr < PICO_FLASH_MEMORY_ADDR + PICO_FLASH_MEMORY_SIZE)
-    {
-        printf("can't read flash memory for the moment \n");
-        dump_cpu(cpu);
-        return READ_MEMORY_FLASH_ERROR;
-    }
-    else
-    {
-        printf("error: cpu trying to read out of bound memory address 0x%x \n", addr);
-        dump_cpu(cpu);
+        printf("trying to read OOB memory %x \n", addr);
         return READ_MEMORY_OOB;
     }
+    else if (!res->can_read)
+    {
+        printf("trying to read memory that can't be readed %s at %x \n", res->name, addr - res->start);
+        return READ_MEMORY_WO_ERROR;
+    }
+    return res->read16(addr - res->start, cpu, target, res);
 }
 int read_memory_dword(struct pico_cpu *cpu, uint32_t *target, pico_addr addr)
 {
-    //reading the rom
-    if (addr >= PICO_ROM_ADDR && addr <= PICO_ROM_ADDR + PICO_ROM_SIZE)
+    struct memory_region *res = get_memory_region(&cpu->regions, addr);
+    if (res == NULL)
     {
-        if (!read_rom_32(&cpu->memory.boot_rom, addr - PICO_ROM_ADDR, target))
-        {
-            return READ_MEMORY_ROM_ERROR;
-        }
-        return READ_MEMORY_SUCCESS;
-    }
-    //reading sram
-    else if (addr >= PICO_SRAM_ADDR && addr <= PICO_SRAM_ADDR + PICO_SRAM_SIZE)
-    {
-        if (!read_sram_32(&cpu->memory.sram, addr - PICO_SRAM_ADDR, target))
-        {
-            return READ_MEMORY_ROM_ERROR;
-        }
-        return READ_MEMORY_SUCCESS;
-    }
-    // reading flash
-    else if (addr > PICO_FLASH_MEMORY_ADDR && addr < PICO_FLASH_MEMORY_ADDR + PICO_FLASH_MEMORY_SIZE)
-    {
-        printf("can't read flash memory for the moment \n");
-        dump_cpu(cpu);
-        return READ_MEMORY_FLASH_ERROR;
-    }
-    // reading SIO
-    else if (addr >= PICO_SIO_START && addr < PICO_SIO_START + PICO_SIO_LENGTH)
-    {
-        if (!read_sio_32(cpu, addr - PICO_SIO_START, target))
-        {
-            return READ_MEMORY_SIO_ERROR;
-        }
-        return READ_MEMORY_FLASH_ERROR;
-    }
-    else
-    {
-        printf("error: cpu trying to read out of bound memory address 0x%x \n", addr);
-        dump_cpu(cpu);
+        printf("trying to read OOB memory %x \n", addr);
         return READ_MEMORY_OOB;
     }
+    else if (!res->can_read)
+    {
+        printf("trying to read memory that can't be readed %s at %x \n", res->name, addr);
+        return READ_MEMORY_WO_ERROR;
+    }
+    return res->read32(addr - res->start, cpu, target, res);
 }
 // -------------------------------- writing --------------------------------
 int write_memory_byte(struct pico_cpu *cpu, uint8_t target, pico_addr addr)
 {
-    //writing the rom
-    if (addr >= PICO_ROM_ADDR && addr <= PICO_ROM_ADDR + PICO_ROM_SIZE)
+    struct memory_region *res = get_memory_region(&cpu->regions, addr);
+    if (res == NULL)
     {
-        printf("error: trying to write to the ROM wich is a RO memory \n");
-        return WRITE_MEMORY_ROM_ERROR;
-    }
-    //writing sram
-    else if (addr >= PICO_SRAM_ADDR && addr <= PICO_SRAM_ADDR + PICO_SRAM_SIZE)
-    {
-        if (!write_sram_8(&cpu->memory.sram, addr - PICO_SRAM_ADDR, target))
-        {
-            return WRITE_MEMORY_ROM_ERROR;
-        }
-        return WRITE_MEMORY_SUCCESS;
-    }
-    // writing flash
-    else if (addr > PICO_FLASH_MEMORY_ADDR && addr < PICO_FLASH_MEMORY_ADDR + PICO_FLASH_MEMORY_SIZE)
-    {
-        printf("can't write flash memory for the moment \n");
-        dump_cpu(cpu);
-        return WRITE_MEMORY_FLASH_ERROR;
-    }
-    else
-    {
-        printf("error: cpu trying to writing out of bound memory address 0x%x \n", addr);
-        dump_cpu(cpu);
+        printf("trying to write OOB memory %x \n", addr);
         return WRITE_MEMORY_OOB;
     }
+    else if (!res->can_read)
+    {
+        printf("trying to write memory that can't be readed %s at %x \n", res->name, addr - res->start);
+        return WRITE_MEMORY_RO_ERROR;
+    }
+    return res->write8(addr - res->start, cpu, target, res);
 }
 int write_memory_word(struct pico_cpu *cpu, uint16_t target, pico_addr addr)
 {
-    //writing the rom
-    if (addr >= PICO_ROM_ADDR && addr <= PICO_ROM_ADDR + PICO_ROM_SIZE)
+    struct memory_region *res = get_memory_region(&cpu->regions, addr);
+    if (res == NULL)
     {
-        printf("error: trying to write to the ROM wich is a RO memory \n");
-        return WRITE_MEMORY_ROM_ERROR;
-    }
-    //writing sram
-    else if (addr >= PICO_SRAM_ADDR && addr <= PICO_SRAM_ADDR + PICO_SRAM_SIZE)
-    {
-        if (!write_sram_16(&cpu->memory.sram, addr - PICO_SRAM_ADDR, target))
-        {
-            return WRITE_MEMORY_ROM_ERROR;
-        }
-        return WRITE_MEMORY_SUCCESS;
-    }
-    // writing flash
-    else if (addr > PICO_FLASH_MEMORY_ADDR && addr < PICO_FLASH_MEMORY_ADDR + PICO_FLASH_MEMORY_SIZE)
-    {
-        printf("can't write flash memory for the moment \n");
-        dump_cpu(cpu);
-        return WRITE_MEMORY_FLASH_ERROR;
-    }
-    else
-    {
-        printf("error: cpu trying to writing out of bound memory address 0x%x \n", addr);
-        dump_cpu(cpu);
+        printf("trying to write OOB memory %x \n", addr);
         return WRITE_MEMORY_OOB;
     }
+    else if (!res->can_read)
+    {
+        printf("trying to write memory that can't be readed %s at %x \n", res->name, addr - res->start);
+        return WRITE_MEMORY_RO_ERROR;
+    }
+    return res->write16(addr - res->start, cpu, target, res);
 }
 int write_memory_dword(struct pico_cpu *cpu, uint32_t target, pico_addr addr)
 {
-    //writing the rom
-    if (addr >= PICO_ROM_ADDR && addr <= PICO_ROM_ADDR + PICO_ROM_SIZE)
+    struct memory_region *res = get_memory_region(&cpu->regions, addr);
+    if (res == NULL)
     {
-        printf("error: trying to write to the ROM wich is a RO memory \n");
-        return WRITE_MEMORY_ROM_ERROR;
-    }
-    //writing sram
-    else if (addr >= PICO_SRAM_ADDR && addr <= PICO_SRAM_ADDR + PICO_SRAM_SIZE)
-    {
-        if (!write_sram_32(&cpu->memory.sram, addr - PICO_SRAM_ADDR, target))
-        {
-            return WRITE_MEMORY_ROM_ERROR;
-        }
-        return WRITE_MEMORY_SUCCESS;
-    }
-    // writing flash
-    else if (addr > PICO_FLASH_MEMORY_ADDR && addr < PICO_FLASH_MEMORY_ADDR + PICO_FLASH_MEMORY_SIZE)
-    {
-        printf("can't write flash memory for the moment \n");
-        dump_cpu(cpu);
-        return WRITE_MEMORY_FLASH_ERROR;
-    }
-    else if (addr >= PICO_SIO_START && addr < PICO_SIO_START + PICO_SIO_LENGTH)
-    {
-        if (!write_sio_32(cpu, addr - PICO_SIO_START, target))
-        {
-            return WRITE_MEMORY_SIO_ERROR;
-        }
-        return WRITE_MEMORY_FLASH_ERROR;
-    }
-    else
-    {
-        printf("error: cpu trying to writing out of bound memory address 0x%x \n", addr);
-        dump_cpu(cpu);
+        printf("trying to write OOB memory %x \n", addr);
         return WRITE_MEMORY_OOB;
     }
+    else if (!res->can_read)
+    {
+        printf("trying to write memory that can't be readed %s at %x \n", res->name, addr - res->start);
+        return WRITE_MEMORY_RO_ERROR;
+    }
+    return res->write32(addr - res->start, cpu, target, res);
 }

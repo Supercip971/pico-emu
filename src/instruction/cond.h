@@ -1,7 +1,8 @@
 #ifndef COND_H
 #define COND_H
 #include "../pico_cpu.h"
-enum condition_set{
+enum condition_set
+{
 
     COND_EQUAL = 0b0000,
     COND_NOT_EQUAL = 0b0001,

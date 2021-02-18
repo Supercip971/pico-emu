@@ -13,12 +13,9 @@
 struct SIO_Register
 {
     const char *name;
-    uint8_t (*read_handler)(struct SIO_Register *, struct pico_cpu *, uint32_t *);
-    uint8_t (*write_handler)(struct SIO_Register *, struct pico_cpu *, uint32_t);
+    int (*read_handler)(struct SIO_Register *, struct pico_cpu *, uint32_t *);
+    int (*write_handler)(struct SIO_Register *, struct pico_cpu *, const uint32_t);
 };
 
-bool read_sio_32(struct pico_cpu *cpu, pico_addr raw_addr, uint32_t *target);
-
-bool write_sio_32(struct pico_cpu *cpu, pico_addr raw_addr, uint32_t target);
-
+int init_sio(struct pico_cpu *cpu);
 #endif

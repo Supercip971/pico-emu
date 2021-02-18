@@ -15,37 +15,31 @@ bool is_valid_rom_addr(pico_addr addr)
     return true;
 }
 
-bool read_rom_8(pico_rom_t *rom, pico_addr raw_addr, uint8_t *target)
+int read_rom_8(pico_addr raw_addr, struct pico_cpu *cpu, uint8_t *target, struct memory_region *self)
 {
 
-    uint8_t *v = rom->rom_data + (raw_addr);
+    uint8_t *v = self->data + (raw_addr);
     *target = *v;
-    return true;
+    return 0;
 }
 
-bool read_rom_16(pico_rom_t *rom, pico_addr raw_addr, uint16_t *target)
+int read_rom_16(pico_addr raw_addr, struct pico_cpu *cpu, uint16_t *target, struct memory_region *self)
 {
-    if (raw_addr % 2 != 0)
-    {
-        printf("warning: trying to read 16bit without aligned addr: 0x%x", raw_addr);
-    }
-    uint16_t *v = (uint16_t *)(rom->rom_data + (raw_addr));
+
+    uint16_t *v = (uint16_t *)(self->data + (raw_addr));
     *target = *v;
-    return true;
+    return 0;
 }
 
-bool read_rom_32(pico_rom_t *rom, pico_addr raw_addr, uint32_t *target)
+int read_rom_32(pico_addr raw_addr, struct pico_cpu *cpu, uint32_t *target, struct memory_region *self)
 {
-    if (raw_addr % 4 != 0)
-    {
-        printf("warning: trying to read 32bit without aligned addr: 0x%x", raw_addr);
-    }
-    uint32_t *v = (uint32_t *)(rom->rom_data + (raw_addr));
+
+    uint32_t *v = (uint32_t *)(self->data + (raw_addr));
     *target = *v;
-    return true;
+    return 0;
 }
 
-int init_rom(pico_rom_t *rom)
+int init_rom(struct pico_cpu *cpu)
 {
 
     FILE *f = fopen("bootrom", "rb");
@@ -66,19 +60,34 @@ int init_rom(pico_rom_t *rom)
 
         return -2;
     }
-
-    fread(rom->rom_data, 1, fsize, f);
+    struct memory_region *mem_region = malloc(sizeof(struct memory_region));
+    mem_region->data = malloc(PICO_ROM_SIZE);
+    mem_region->data_size = PICO_ROM_SIZE;
+    fread(mem_region->data, 1, fsize, f);
     fclose(f);
+
+    mem_region->can_write = false;
+    mem_region->can_read = true;
+    mem_region->name = "ROM";
+    mem_region->start = PICO_ROM_ADDR;
+    mem_region->size = PICO_ROM_SIZE;
+    mem_region->read8 = read_rom_8;
+    mem_region->read16 = read_rom_16;
+    mem_region->read32 = read_rom_32;
+    mem_region->write8 = NULL;
+    mem_region->write16 = NULL;
+    mem_region->write32 = NULL;
+    add_dynamic_memory_region(&cpu->regions, mem_region);
     return 0;
 }
 
-bool init_boot_rom_vector(struct pico_bootrom_vector *target, pico_rom_t *rom)
+bool init_boot_rom_vector(struct pico_bootrom_vector *target, struct pico_cpu *cpu)
 {
     size_t length_to_read = sizeof(struct pico_bootrom_vector);
     uint8_t *raw_target = malloc(sizeof(struct pico_bootrom_vector));
-    for (int i = 0; i < length_to_read; i++)
+    for (uint32_t i = 0; i < length_to_read; i++)
     {
-        read_rom_8(rom, i, raw_target + i);
+        read_memory_byte(cpu, raw_target + i, i);
     }
     memcpy(target, raw_target, length_to_read);
     free(raw_target);

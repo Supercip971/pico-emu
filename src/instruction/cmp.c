@@ -5,15 +5,14 @@
 uint8_t cmp_immediate(struct raw_instruction instruction, struct pico_cpu *cpu)
 {
 
-    uint32_t imm32 = (int32_t)instruction.down; // expend to 32bit 
+    uint32_t imm32 = (int32_t)instruction.down; // expend to 32bit
     uint8_t base_register = (instruction.up & 0b111);
     uint32_t base_register_value = cpu->registers.R_register[base_register];
-    struct add_with_carry_result res = {0,0,0} ;
+    struct add_with_carry_result res = {0, 0, 0};
     cpu->registers.status.negative_condition = imm32 > base_register_value;
     cpu->registers.status.carry_flag = res.carry;
     cpu->registers.status.zero_condition = (res.result == 0);
-    cpu->registers.status.overflow_flag = res.overflow ;
-
+    cpu->registers.status.overflow_flag = res.overflow;
 
     printf("(immediate) cmp R%i, 0x%x \n", base_register, imm32);
     printf("  = {C: %i, V: %i, R: %i, Z: %i} \n", res.carry, res.overflow, res.result, res.result == 0);
