@@ -2,8 +2,27 @@
 
 #include "instruction/instruction_list.h"
 #include <stdio.h>
-
-
+// run Special data instruction and Branch and Exchange 
+uint8_t run_SdiBE_instruction(struct pico_cpu *cpu, struct raw_instruction instruction){
+    uint8_t raw_opcode = (instruction.raw_instruction & 0b1111000000) >> 6;
+    if((raw_opcode & 0b1100) == 0b1000){
+        return mov_instruction_t1(instruction, cpu);
+    }else if((raw_opcode & 0b1110) == 0b1100){
+        // branch and Exchange
+    }else if((raw_opcode & 0b1110) == 0b1110){
+        // branch with link and Exchange
+    }else if((raw_opcode & 0b1100) == 0b0000){
+        // add
+    }else if((raw_opcode & 0b1111) == 0b0101){
+        // compare 1
+    }else if((raw_opcode & 0b1110) == 0b0110){
+        // compare 2
+    }
+    
+    
+    printf("invalid special data  instruction or branch and exchange %x at %x \n ", instruction.raw_instruction , cpu->registers.PC - 2);
+    return 10;
+}
 uint8_t run_32bit_instruction(struct pico_cpu *cpu, struct raw_instruction start_instruction){
     struct raw32_instruction instruction_32;
     uint32_t third = fetch_byte(cpu);
@@ -50,6 +69,10 @@ uint8_t run_instruction(struct pico_cpu *cpu)
     // branch instruction
     else if((second & 0b11110000) == 0b11010000){
         return B_instruction_t1(raw_instruction, cpu);
+    }
+    // Special data instruction or Branch or Exchange 
+    else if((second & 0b11111100) == 0b01000100){
+        return run_SdiBE_instruction(cpu, raw_instruction);
     }
     // 32bit instruction
     else if((second & 0b11100000) == 0b11100000){ // 32bit instruction
