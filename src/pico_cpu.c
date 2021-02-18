@@ -1,7 +1,7 @@
 #include "pico_cpu.h"
 #include "sio_reg.h"
 #include <stdio.h>
-
+const char* registers_names[] = { "R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "SP", "LR", "PC"};
 void reset_cpu(struct pico_cpu *cpu)
 {
     cpu->registers.status.carry_flag = 0;
@@ -16,6 +16,28 @@ void reset_cpu(struct pico_cpu *cpu)
     {
         cpu->registers.R_register[i] = 0;
     }
+}
+
+uint32_t* get_register(uint32_t id, struct pico_register* table){
+    if(id < R_REGISTER_COUNT){
+        
+        return &table->R_register[id] ;
+    }else if(id == 15){
+        
+        return &table->PC ;
+    }else if(id == 14){
+        
+        return &table->LR ;
+    }else if(id == 13){
+        
+        return &table->SP ;
+    }
+    
+    return NULL;
+}
+
+const char* get_register_name(uint32_t id){
+    return registers_names[id];
 }
 
 uint8_t fetch_byte(struct pico_cpu *cpu)

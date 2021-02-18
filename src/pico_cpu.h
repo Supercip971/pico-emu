@@ -25,13 +25,15 @@ struct pico_register
     uint32_t PC;                           // programm counter
     struct APS_Register status;
 };
-
 struct pico_cpu
 {
     int core_id;
     struct rasp_pico_memory memory;
     struct pico_register registers;
 };
+
+uint32_t* get_register(uint32_t id, struct pico_register* table);
+const char* get_register_name(uint32_t id); // for debugging
 
 void dump_cpu(const struct pico_cpu *cpu);
 void reset_cpu(struct pico_cpu *cpu);
