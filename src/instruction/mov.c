@@ -39,3 +39,18 @@ uint8_t mov_immediate(struct raw_instruction instruction, struct pico_cpu *cpu){
     return 0;
 
 }
+
+uint8_t mvns_instruction_t1(struct raw_instruction instruction, struct pico_cpu *cpu){
+    uint32_t d = (instruction.down & 0b111);
+    uint32_t m = (instruction.down & 0b111000) >> 3;
+    
+    uint32_t* result = get_register(m, &cpu->registers);
+    uint32_t* target = get_register(d , &cpu->registers);
+    if(result == NULL || target == NULL){
+        printf("invalid mvns register for id %i -> %i", m, d);
+        return 2;
+    }
+    *result = ~(*target);
+    printf("mvns %s, %s \n", get_register_name(d), get_register_name(m));
+    return 0;
+}
