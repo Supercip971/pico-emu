@@ -80,6 +80,9 @@ uint8_t run_instruction(struct pico_cpu *cpu)
     }// MVNS (mvn with register)
     else if((raw_instruction.raw_instruction & 0b1111111111000000) == 0b0100001111000000){
         return mvns_instruction_t1(raw_instruction, cpu);
+    }// STR (str immediate t1)
+    else if((second & 0b11111000) == 0b01100000){
+        return str_immediate_t1(raw_instruction, cpu);
     }
     // 32bit instruction
     else if((second & 0b11100000) == 0b11100000){ // 32bit instruction
