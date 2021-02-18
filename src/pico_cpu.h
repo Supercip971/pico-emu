@@ -49,4 +49,14 @@ bool start_cpu(struct pico_cpu *cpu, int cpu_id);
 int read_memory_byte(struct pico_cpu *cpu, uint8_t *target, pico_addr addr);
 int read_memory_word(struct pico_cpu *cpu, uint16_t *target, pico_addr addr);
 int read_memory_dword(struct pico_cpu *cpu, uint32_t *target, pico_addr addr);
+
+#define WRITE_MEMORY_SUCCESS 0
+#define WRITE_MEMORY_OOB -1
+#define WRITE_MEMORY_ROM_ERROR -2
+#define WRITE_MEMORY_SRAM_ERROR -3
+#define WRITE_MEMORY_FLASH_ERROR -4
+#define WRITE_MEMORY_SIO_ERROR -5
+int write_memory_byte(struct pico_cpu *cpu, uint8_t target, pico_addr addr);
+int write_memory_word(struct pico_cpu *cpu, uint16_t target, pico_addr addr);
+int write_memory_dword(struct pico_cpu *cpu, uint32_t target, pico_addr addr);
 #endif
