@@ -11,7 +11,7 @@ uint8_t B_instruction_t1(struct raw_instruction instruction, struct pico_cpu *cp
     int res = is_condition_met(condition, cpu->registers.status);
     if (res == 1)
     {
-        cpu->registers.PC = target_addr;
+        cpu->registers.PC += target_addr;
     }
     else if (res < 0)
     {
