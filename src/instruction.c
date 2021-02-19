@@ -12,7 +12,7 @@ uint8_t run_SdiBE_instruction(struct pico_cpu *cpu, struct raw_instruction instr
     }
     else if ((raw_opcode & 0b1110) == 0b1100)
     {
-        // branch and Exchange
+        return BX_instruction_t1(instruction, cpu);
     }
     else if ((raw_opcode & 0b1110) == 0b1110)
     {
