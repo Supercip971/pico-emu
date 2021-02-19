@@ -1,4 +1,4 @@
-#include "ldr.h"
+#include "ld.h"
 #include "../pico_cpu.h"
 #include "../utils.h"
 #include <stdio.h>
@@ -27,5 +27,45 @@ uint8_t ldr_immediate_instruction(struct raw_instruction instruction, struct pic
     ;
 
     printf("ldr immediate instruction: R%i -> R%i  with offset 0x%x final addr: 0x%x = 0x%x\n", base_register, destination_register, imm32, offset_addr, cpu->registers.R_register[destination_register]);
+    return 0;
+}
+uint8_t ldm_t1_instruction(struct raw_instruction instruction, struct pico_cpu *cpu){
+    uint32_t n = instruction.up & 0b111;
+    uint32_t registers = instruction.down;
+
+    int wback = ((registers & (1 << n)) == 0);
+    int write_count = 0; // 
+    int registers_count[7];
+    uint32_t* Rn = get_register(n, &cpu->registers);
+    if(Rn == NULL){
+        return -1;
+    }
+    uint32_t addr = *Rn;
+    for(int i = 0; i < 7; i++){
+
+        int current = ((registers & (1 << i)) != 0);
+        if(current){
+            registers_count[write_count] = i;
+
+            write_count++;
+            uint32_t* target = get_register(i, &cpu->registers);
+            read_memory_dword(cpu, target, addr);
+            addr +=4;
+
+        }
+    }
+    if(wback){
+        printf("LDM %s!,", get_register_name(n));
+        *Rn = *Rn + (write_count*4);
+    }else{
+
+        printf("LDM %s,", get_register_name(n));
+    }
+    
+    printf("{");
+    for(int i = 0; i < write_count; i++){
+        printf("%s,", get_register_name(registers_count[i]));
+    }
+    printf("} \n");
     return 0;
 }
