@@ -2,6 +2,7 @@
 #define PICO_APB_H
 #include "config.h"
 #include "pico_cpu.h"
+
 #include <stdbool.h>
 #include <stdint.h>
 typedef struct pico_cpu pico_cpu;
@@ -21,4 +22,5 @@ struct APB_raw_Register
 };
 
 int init_apb(struct pico_cpu *cpu);
+int reset_abp_voltage_reg(struct APB_Voltage_register *reg);
 #endif

@@ -2,6 +2,7 @@
 
 #include "pico_cpu.h"
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 int abp_null_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint32_t target, pico_addr addr)
 {
@@ -33,9 +34,24 @@ int abp_syscfg_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const 
     *((uint32_t *)data) = target;
     return 0;
 }
+int abp_vreg_read(struct APB_raw_Register *self, struct pico_cpu *cpu, uint32_t *target, pico_addr addr)
+{
+    uint8_t *data = (uint8_t *)&cpu->apb_register.voltage_reg;
+    data += addr;
+    *target = *((uint32_t *)data);
+    return 0;
+}
+int abp_vreg_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint32_t target, pico_addr addr)
+{
+    uint8_t *data = (uint8_t *)&cpu->apb_register.voltage_reg;
+    data += addr;
+    *((uint32_t *)data) = target;
+    return 0;
+}
 struct APB_raw_Register abp_reg_table[] = {
-    {"SYSINFO_BASE", 0, 0x44, abp_null_read, abp_null_write},
-    {"SYSCFG_BASE", 0x4000, 0x19, abp_syscfg_read, abp_syscfg_write}};
+    {"SYSINFO", 0, 0x44, abp_null_read, abp_null_write},
+    {"SYSCFG", 0x4000, 0x19, abp_syscfg_read, abp_syscfg_write},
+    {"VREG_CHIP_RESET", 0x64000, 0x11, abp_vreg_read, abp_vreg_write}};
 
 #define REG_TABLE_ENTRY_COUNT sizeof(abp_reg_table) / sizeof(struct APB_raw_Register)
 struct APB_raw_Register *select_register(pico_addr addr)
@@ -89,5 +105,14 @@ int init_apb(struct pico_cpu *cpu)
     mem_region->write16 = NULL;
     mem_region->write32 = write_abp_32;
     add_dynamic_memory_region(&cpu->regions, mem_region);
+    return 0;
+}
+int reset_abp_voltage_reg(struct APB_Voltage_register *reg){
+    memset(reg, 0, sizeof(struct APB_Voltage_register));
+
+    reg->control_status.vsel = 0xb;
+    reg->control_status.enable = 0x1;
+    reg->bod_register.vsel = 0x9;
+    reg->bod_register.enable = 0x1;
     return 0;
 }

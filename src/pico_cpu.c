@@ -18,6 +18,8 @@ void reset_cpu(struct pico_cpu *cpu)
     cpu->registers.LR = 0;
     cpu->registers.PC = 0;
 
+    reset_abp_voltage_reg(&cpu->apb_register.voltage_reg);
+
     for (int i = 0; i < R_REGISTER_COUNT; i++)
     {
         cpu->registers.R_register[i] = 0;
