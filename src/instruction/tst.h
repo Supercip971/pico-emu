@@ -1,0 +1,9 @@
+#ifndef TST_H
+#define TST_H
+
+#include "instruction_list.h"
+#include <stdint.h>
+
+uint8_t tst_t1(struct raw_instruction instruction, struct pico_cpu *cpu);
+
+#endif

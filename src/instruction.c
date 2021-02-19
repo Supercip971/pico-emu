@@ -34,6 +34,19 @@ uint8_t run_SdiBE_instruction(struct pico_cpu *cpu, struct raw_instruction instr
     printf("invalid special data  instruction or branch and exchange %x at %x \n ", instruction.raw_instruction, cpu->registers.PC - 2);
     return 1;
 }
+uint8_t run_data_processing_instruction(struct pico_cpu *cpu, struct raw_instruction instruction){
+    uint8_t raw_opcode = (instruction.raw_instruction & 0b1111000000) >> 6;
+    if ((raw_opcode & 0b1111) == 0b1000)
+    {
+        return tst_t1(instruction, cpu);
+    }else if((raw_opcode & 0b1111) == 0b1111){
+
+        return mvns_instruction_t1(instruction, cpu);
+    }
+    printf("invalid special data processing instruction %x at %x \n ", instruction.raw_instruction, cpu->registers.PC - 2);
+    
+     return 1;
+}
 uint8_t run_32bit_instruction(struct pico_cpu *cpu, struct raw_instruction start_instruction)
 {
     struct raw32_instruction instruction_32;
@@ -56,6 +69,7 @@ uint8_t run_32bit_instruction(struct pico_cpu *cpu, struct raw_instruction start
 }
 uint8_t run_instruction(struct pico_cpu *cpu)
 {
+    printf("[%x] \n", cpu->registers.PC);
     uint8_t first = fetch_byte(cpu);
     uint8_t second = fetch_byte(cpu);
     uint16_t instruction = first | (second << 8);
@@ -89,15 +103,16 @@ uint8_t run_instruction(struct pico_cpu *cpu)
     {
         return run_SdiBE_instruction(cpu, raw_instruction);
     }
+    // special data processing instruction 
+    else if ((second & 0b11111100) == 0b01000000)
+    {
+        return run_data_processing_instruction(cpu, raw_instruction);
+    }
     // MOVS (mov immediate)
     else if ((second & 0b11111000) == 0b00100000)
     {
         return mov_immediate(raw_instruction, cpu);
-    } // MVNS (mvn with register)
-    else if ((raw_instruction.raw_instruction & 0b1111111111000000) == 0b0100001111000000)
-    {
-        return mvns_instruction_t1(raw_instruction, cpu);
-    } // STR (str immediate t1)
+    }// STR (str immediate t1)
     else if ((second & 0b11111000) == 0b01100000)
     {
         return str_immediate_t1(raw_instruction, cpu);

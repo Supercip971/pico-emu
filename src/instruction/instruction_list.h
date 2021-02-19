@@ -8,6 +8,7 @@
 #include "ldr.h"
 #include "mov.h"
 #include "str.h"
+#include "tst.h"
 #include "bx.h"
 #include <stdbool.h>
 
