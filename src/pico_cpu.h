@@ -2,6 +2,7 @@
 #define PICO_CPU_H
 #include "config.h"
 #include "memory_region.h"
+#include "pico_apb_registers.h"
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -47,6 +48,7 @@ struct pico_cpu
     struct pico_register registers;
     int region_count;
     struct memory_region_list regions;
+    struct APB_registers apb_register;
 };
 
 int init_cpu(struct pico_cpu *cpu, char *file_path);

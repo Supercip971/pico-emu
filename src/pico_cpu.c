@@ -1,4 +1,5 @@
 #include "pico_cpu.h"
+#include "pico_apb.h"
 #include "pico_rom.h"
 #include "sio_reg.h"
 #include "sram.h"
@@ -10,6 +11,9 @@ void reset_cpu(struct pico_cpu *cpu)
     cpu->registers.status.zero_condition = 0;
     cpu->registers.status.overflow_flag = 0;
     cpu->registers.status.negative_condition = 0;
+    cpu->apb_register.syscfg_reg.core_0_nmi = 0;
+    cpu->apb_register.syscfg_reg.core_1_nmi = 0;
+    cpu->apb_register.syscfg_reg.proc_config.proc1_dap_instance_id = 1;
 
     cpu->registers.LR = 0;
     cpu->registers.PC = 0;
@@ -39,6 +43,10 @@ int init_cpu(struct pico_cpu *cpu, char *file_path)
     if (init_sio(cpu) != 0)
     {
         return -4;
+    };
+    if (init_apb(cpu) != 0)
+    {
+        return -5;
     };
     return 0;
 }

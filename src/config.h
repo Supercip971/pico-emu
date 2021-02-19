@@ -29,6 +29,10 @@ typedef uint32_t pico_addr;
 #define PICO_SIO_START 0xd0000000
 #define PICO_SIO_LENGTH 0xfffffff
 
+// single cycle io block
+#define PICO_APB_START 0x40000000
+#define PICO_APB_LENGTH 0x6c008
+
 #define MAX_MEMORY_REGION 128
 
 #endif

@@ -14,7 +14,6 @@ uint8_t cmp_immediate(struct raw_instruction instruction, struct pico_cpu *cpu)
     cpu->registers.status.zero_condition = (res.result == 0);
     cpu->registers.status.overflow_flag = res.overflow;
 
-    printf("(immediate) cmp R%i, 0x%x \n", base_register, imm32);
-    printf("  = {C: %i, V: %i, R: %i, Z: %i} \n", res.carry, res.overflow, res.result, res.result == 0);
+    printf("cmp R%i, 0x%x \n", base_register, imm32);
     return 0;
 }
