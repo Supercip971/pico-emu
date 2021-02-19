@@ -42,6 +42,9 @@ uint8_t run_data_processing_instruction(struct pico_cpu *cpu, struct raw_instruc
     }else if((raw_opcode & 0b1111) == 0b1111){
 
         return mvns_instruction_t1(instruction, cpu);
+    }else if((raw_opcode & 0b1111) == 0b1010){
+
+        return cmp_register_t1(instruction, cpu);
     }
     printf("invalid special data processing instruction %x at %x \n ", instruction.raw_instruction, cpu->registers.PC - 2);
     
