@@ -18,4 +18,10 @@ struct SIO_Register
 };
 
 int init_sio(struct pico_cpu *cpu);
+int null_write(struct SIO_Register *self, struct pico_cpu *cpu, const uint32_t target);
+int null_read(struct SIO_Register *self, struct pico_cpu *cpu, uint32_t *target);
+int cpuid_read(struct SIO_Register *self, struct pico_cpu *cpu, uint32_t *target);
+int read_sio_32(pico_addr raw_addr, struct pico_cpu *cpu, uint32_t *target, struct memory_region *self);
+int write_sio_32(pico_addr raw_addr, struct pico_cpu *cpu, const uint32_t target, struct memory_region *self);
+
 #endif

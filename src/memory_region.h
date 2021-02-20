@@ -1,19 +1,20 @@
 #ifndef MEM_REGION_H
 #define MEM_REGION_H
 #include <stddef.h>
-typedef struct pico_cpu pico_cpu;
-#include "config.h"
-#include "pico_cpu.h"
 #include <stdbool.h>
 
+#include "config.h"
+#include "pico_cpu.h"
+
+typedef struct pico_cpu pico_cpu;
 struct memory_region
 {
-
     pico_addr start;
     pico_addr size;
     const char *name;
 
     uint8_t *data;
+    bool data_is_malloc;
     size_t data_size;
 
     bool can_read;
@@ -31,6 +32,7 @@ struct memory_region_list
     struct memory_region *regions[MAX_MEMORY_REGION];
     int memory_region_count;
 };
+
 void add_dynamic_memory_region(struct memory_region_list *mem_list, struct memory_region *region);
 void destroy_dynamic_memory_region_list(struct memory_region_list *mem_list);
 struct memory_region *get_memory_region(struct memory_region_list *mem_list, pico_addr addr);
