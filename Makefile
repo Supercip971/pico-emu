@@ -1,19 +1,21 @@
 DIR_GUARD=mkdir -p $(@D)
-BUILD_PATH := ./build/
-PROJECT_DIR := ./src/
+BUILD_PATH := ./build
+PROJECT_DIR := ./src
 
-CFILES := $(shell find $(PROJECT_DIR) -type f -name \*.c)
-HFILES := $(shell find $(PROJECT_DIR) -type f -name \*.h)
+CFILES := $(shell find $(PROJECT_DIR) -type f -name *.c)
+HFILES := $(shell find $(PROJECT_DIR) -type f -name *.h)
 
 OBJFILES := $(patsubst %.c, $(BUILD_PATH)/%.o, $(CFILES))
 OUTPUT := $(BUILD_PATH)/picemu
+
 SANITIZER := \
 	-fsanitize=address \
 	-fsanitize=undefined 
+
 GCC_FLAGS := \
 	-g \
 	-O2 \
-  -pthread \
+  	-pthread \
 	-I$(PROJECT_DIR) \
 	-msse \
 	-std=c17 \
