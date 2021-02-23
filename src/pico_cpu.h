@@ -17,7 +17,28 @@
 #define WRITE_MEMORY_OOB -1
 #define WRITE_MEMORY_RO_ERROR -2
 
+union raw_special_instruction{
+    struct{
+        uint32_t low : 3;
+        uint32_t high : 5;
 
+    };
+    uint32_t raw;
+}__attribute__((packed));
+struct special_register{
+    uint32_t APSR;
+    uint32_t IAPSR;
+    uint32_t EAPSR;
+    uint32_t XPSR;
+    uint32_t unused;
+    uint32_t IPSR;
+    uint32_t EPSR;
+    uint32_t IEPSR;
+    uint32_t MSP;
+    uint32_t PSP;
+    uint32_t PRIMASK;
+    uint32_t CONTROL;
+};
 struct APS_Register
 {
     uint8_t negative_condition : 1;
@@ -36,6 +57,8 @@ struct pico_register
     uint32_t PC;                           // programm counter
 
     struct APS_Register status;
+    struct special_register special_reg;
+    
 };
 
 struct pico_bootrom_vector
@@ -60,11 +83,16 @@ struct pico_cpu
     struct pico_bootrom_vector bootrom_vec;
     struct pico_register registers;
     struct APB_registers apb_register;
+    bool privileged;
 };
 
 int init_cpu(struct pico_cpu *cpu, char *file_path);
 uint32_t *get_register(uint32_t id, struct pico_register *table);
 const char *get_register_name(uint32_t id); // for debugging
+
+uint32_t *get_special_register(uint32_t id, struct pico_register *table);
+const char *get_special_register_name(uint32_t id); // for debugging
+
 
 void dump_cpu(const struct pico_cpu *cpu);
 void reset_cpu(struct pico_cpu *cpu);

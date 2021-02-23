@@ -7,7 +7,7 @@
 #include "sram.h"
 
 const char *registers_names[] = {"R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "SP", "LR", "PC"};
-
+const char *special_registers_names[] = {"APSR", "IAPSR", "EAPSR", "XPSR", "unused", "IPSR", "EPSR", "IEPSR", "MSP", "PSP", "PRIMASK", "CONTROL"};
 void reset_cpu(struct pico_cpu *cpu)
 {
     cpu->registers.status.carry_flag = 0;
@@ -31,6 +31,7 @@ void reset_cpu(struct pico_cpu *cpu)
 
 int init_cpu(struct pico_cpu *cpu, char *file_path)
 {
+    cpu->privileged = true;
     cpu->regions.memory_region_count = 0;
 
     if (init_rom(cpu) != 0)
@@ -88,6 +89,39 @@ const char *get_register_name(uint32_t id)
 {
     return registers_names[id];
 }
+const char *get_special_register_name(uint32_t id)
+{
+    if(id < 10&& id != 4){
+        return special_registers_names[id];
+
+    }else if(id == 16){
+        return "PRIMASK";
+    }else if(id == 20){
+        return "CONTROL";
+    }
+    return " -- invalid special register -- ";
+}
+uint32_t *get_special_register(uint32_t id, struct pico_register *table)
+{
+    if (id < 10 && id != 4)
+    {
+
+        return (((uint32_t*)&table->special_reg) + id);
+    }
+    else if (id == 16)
+    {
+
+        return &table->special_reg.PRIMASK;
+    }
+    else if (id == 20)
+    {
+
+        return &table->special_reg.CONTROL;
+    }
+
+    return NULL;
+}
+
 
 uint8_t fetch_byte(struct pico_cpu *cpu)
 {
