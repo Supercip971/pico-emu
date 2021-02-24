@@ -5,7 +5,7 @@ uint8_t B_instruction_t1(struct raw_instruction instruction, struct pico_cpu *cp
 {
 
     uint8_t condition = instruction.up & 0b1111;
-    uint32_t target_addr = (instruction.down << 1) + 2;
+    uint32_t target_addr = (instruction.down << 1);
 
     target_addr += 2;
     int res = is_condition_met(condition, cpu->registers.status);

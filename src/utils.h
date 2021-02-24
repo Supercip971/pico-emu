@@ -2,7 +2,7 @@
 #define UTILS_H
 #include <stdbool.h>
 #include <stdint.h>
-#define ALIGN(addr, factor) ((addr / factor) * factor)
+#define ALIGN(addr, factor) ((addr) - (addr % factor))
 
 struct add_with_carry_result
 {

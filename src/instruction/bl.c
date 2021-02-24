@@ -19,7 +19,7 @@ uint8_t BL_instruction_t1(struct raw32_instruction instruction, struct pico_cpu 
     }
     int32_t target_addr = (((uint32_t)rs) << 24) | (i1 << 23) | (i2 << 22) | (imm10 << 12) | (imm11 << 1);
 
-    int32_t res = (uint32_t)cpu->registers.PC + (int32_t)target_addr+2;
+    int32_t res = (uint32_t)cpu->registers.PC + (int32_t)target_addr;
     printf("BL 0x%x \n", res);
     cpu->registers.LR = cpu->registers.PC;
     cpu->registers.PC = res;

@@ -5,13 +5,13 @@
 uint8_t ldr_litteral_instruction(struct raw_instruction instruction, struct pico_cpu *cpu)
 {
     uint8_t target_register = instruction.up & 0b111;
-    uint32_t end_value = instruction.down * 4;
+    uint32_t end_value = ((uint32_t)instruction.down) << 2;
 
-    uint32_t base = ALIGN(cpu->registers.PC, 4);
+    uint32_t base = ((cpu->registers.PC+2) & 0xfffffffc);
     uint32_t addr = (base + end_value);
 
     read_memory_dword(cpu, &cpu->registers.R_register[target_register], addr);
-    printf("ldr litteral instruction: R%i with offset 0x%x final addr: 0x%x \n", target_register, end_value, addr);
+    printf("ldr %s [PC, #%i] ; 0x%x \n", get_register_name(target_register), end_value, addr);
 
     return 0;
 }
@@ -24,7 +24,7 @@ uint8_t ldr_immediate_instruction(struct raw_instruction instruction, struct pic
     imm32 *= 4; // dword aligned
     uint32_t offset_addr = cpu->registers.R_register[base_register] + imm32;
     read_memory_dword(cpu, &cpu->registers.R_register[destination_register], offset_addr);
-    ;
+
 
     printf("ldr immediate instruction: R%i -> R%i  with offset 0x%x final addr: 0x%x = 0x%x\n", base_register, destination_register, imm32, offset_addr, cpu->registers.R_register[destination_register]);
     return 0;
