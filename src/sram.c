@@ -20,13 +20,14 @@ int init_sram(const char *file_path, struct pico_cpu *cpu)
     mem_region->name = "SRAM";
     mem_region->start = PICO_SRAM_ADDR;
     mem_region->size = PICO_SRAM_SIZE;
+    mem_region->data = aligned_alloc(4,PICO_SRAM_SIZE);
     mem_region->read8 = read_sram_8;
     mem_region->read16 = read_sram_16;
     mem_region->read32 = read_sram_32;
     mem_region->write8 = write_sram_8;
     mem_region->write16 = write_sram_16;
     mem_region->write32 = write_sram_32;
-    mem_region->data_is_malloc = false;
+    mem_region->data_is_malloc = true;
 
     add_dynamic_memory_region(&cpu->regions, mem_region);
 

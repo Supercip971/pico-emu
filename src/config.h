@@ -13,7 +13,7 @@ typedef uint32_t pico_addr;
 // ~512M
 #define PICO_SRAM_ADDR 0x20000000
 // 264 kb
-#define PICO_SRAM_SIZE 0x40000
+#define PICO_SRAM_SIZE 0x42000
 // there are 4 pico memory bank
 #define PICO_BANK_COUNT 4
 
