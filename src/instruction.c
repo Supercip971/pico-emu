@@ -125,6 +125,11 @@ uint8_t run_instruction(struct pico_cpu *cpu)
     {
         return str_immediate_t1(raw_instruction, cpu);
     }
+    // push
+    else if ((second & 0b11111110) == 0b10110100)
+    {
+        return push_t1_instruction(raw_instruction, cpu);
+    }
     // 32bit instruction
     else if ((second & 0b11100000) == 0b11100000)
     { // 32bit instruction

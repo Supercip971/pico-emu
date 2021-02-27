@@ -155,7 +155,7 @@ void init_bootrom_table(struct pico_cpu *cpu)
 {
     init_boot_rom_vector(&cpu->bootrom_vec, cpu);
 
-    cpu->registers.SP = cpu->bootrom_vec.initial_stack - 1;
+    cpu->registers.SP = cpu->bootrom_vec.initial_stack ;
     cpu->registers.PC = cpu->bootrom_vec.boot_rom_start - 1;
 
     printf("bootrom table: start = 0x%x stack = 0x%x \n", cpu->registers.PC, cpu->registers.SP);
