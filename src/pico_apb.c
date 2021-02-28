@@ -8,11 +8,15 @@
 struct APB_raw_Register abp_reg_table[] = {
     {"SYSINFO", 0, 0x44, abp_null_read, abp_null_write},
     {"SYSCFG", 0x4000, 0x19, abp_syscfg_read, abp_syscfg_write},
-    {"VREG_CHIP_RESET", 0x64000, 0x11, abp_vreg_read, abp_vreg_write}};
+    {"CLOCK_REG", 0x80a0, 0x4, abp_clock0_read, abp_clock0_write},
+    {"VREG_CHIP_RESET", 0x64000, 0x11, abp_vreg_read, abp_vreg_write},
+    {"WATCHDOG", 0x58000, 0x30, watchdog_read, watchdog_write}
+};
 
 int abp_null_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint32_t target, pico_addr addr)
 {
     printf("error: trying write to not writable ABP register: %s at 0x%x \n", self->name, addr);
+
     return 1;
 }
 
@@ -53,6 +57,44 @@ int abp_vreg_read(struct APB_raw_Register *self, struct pico_cpu *cpu, uint32_t 
 int abp_vreg_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint32_t target, pico_addr addr)
 {
     uint8_t *data = (uint8_t *)&cpu->apb_register.voltage_reg;
+    data += addr;
+    *((uint32_t *)data) = target;
+    
+    return 0;
+}
+
+int abp_clock0_read(struct APB_raw_Register *self, struct pico_cpu *cpu, uint32_t *target, pico_addr addr)
+{
+    uint8_t *data = (uint8_t *)&cpu->clock0;
+    data += addr;
+    *target = *((uint32_t *)data);
+
+    return 0;
+}
+
+int abp_clock0_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint32_t target, pico_addr addr)
+{
+
+
+    uint8_t *data = (uint8_t *)&cpu->clock0;
+    data += addr;
+    *((uint32_t *)data) = target;
+    
+    return 0;
+}
+
+int watchdog_read(struct APB_raw_Register *self, struct pico_cpu *cpu, uint32_t *target, pico_addr addr)
+{
+    uint8_t *data = (uint8_t *)&cpu->apb_register.watchdog_reg;
+    data += addr;
+    *target = *((uint32_t *)data);
+
+    return 0;
+}
+
+int watchdog_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint32_t target, pico_addr addr)
+{
+    uint8_t *data = (uint8_t *)&cpu->apb_register.watchdog_reg;
     data += addr;
     *((uint32_t *)data) = target;
     

@@ -26,10 +26,19 @@ struct APB_raw_Register
 
 int abp_null_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint32_t target, pico_addr addr);
 int abp_null_read(struct APB_raw_Register *self, struct pico_cpu *cpu, uint32_t *target, pico_addr addr);
+
 int abp_syscfg_read(struct APB_raw_Register *self, struct pico_cpu *cpu, uint32_t *target, pico_addr addr);
 int abp_syscfg_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint32_t target, pico_addr addr);
+
 int abp_vreg_read(struct APB_raw_Register *self, struct pico_cpu *cpu, uint32_t *target, pico_addr addr);
 int abp_vreg_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint32_t target, pico_addr addr);
+
+int abp_clock0_read(struct APB_raw_Register *self, struct pico_cpu *cpu, uint32_t *target, pico_addr addr);
+int abp_clock0_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint32_t target, pico_addr addr);
+
+int watchdog_read(struct APB_raw_Register *self, struct pico_cpu *cpu, uint32_t *target, pico_addr addr);
+int watchdog_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint32_t target, pico_addr addr);
+
 struct APB_raw_Register *select_register(pico_addr addr);
 int read_abp_32(pico_addr raw_addr, struct pico_cpu *cpu, uint32_t *target, struct memory_region *self);
 int write_abp_32(pico_addr raw_addr, struct pico_cpu *cpu, const uint32_t target, struct memory_region *self);
