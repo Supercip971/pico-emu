@@ -4,14 +4,14 @@
 #include "../pico_cpu.h"
 #include "b.h"
 #include "bl.h"
-#include "push.h"
+#include "bx.h"
 #include "cmp.h"
 #include "ld.h"
 #include "mov.h"
+#include "msr.h"
+#include "push.h"
 #include "str.h"
 #include "tst.h"
-#include "msr.h"
-#include "bx.h"
 #include <stdbool.h>
 
 #endif

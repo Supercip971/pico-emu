@@ -17,15 +17,17 @@
 #define WRITE_MEMORY_OOB -1
 #define WRITE_MEMORY_RO_ERROR -2
 
-union raw_special_instruction{
-    struct{
+union raw_special_instruction
+{
+    struct
+    {
         uint32_t low : 3;
         uint32_t high : 5;
-
     };
     uint32_t raw;
-}__attribute__((packed));
-struct special_register{
+} __attribute__((packed));
+struct special_register
+{
     uint32_t APSR;
     uint32_t IAPSR;
     uint32_t EAPSR;
@@ -49,52 +51,53 @@ struct APS_Register
     uint16_t _reserved_2;
 };
 
-struct wake_enable_0_register{
+struct wake_enable_0_register
+{
     uint8_t clock_sys_clocks : 1;
 
     uint8_t clock_adc_adc : 1;
     uint8_t clock_sys_adc : 1;
-    
+
     uint8_t clock_sys_bus_ctrl : 1;
     uint8_t clock_sys_bus_fabric : 1;
-    
+
     uint8_t clock_sys_dma : 1;
-    
+
     uint8_t clock_sys_I2C0 : 1;
     uint8_t clock_sys_I2C1 : 1;
-    
+
     uint8_t clock_sys_IO : 1;
-    
+
     uint8_t clock_sys_jtag : 1;
-    
+
     uint8_t clock_sys_vreg_and_chip_reset : 1;
-    
+
     uint8_t clock_sys_pads : 1;
-    
+
     uint8_t clock_sys_PIO0 : 1;
     uint8_t clock_sys_PIO1 : 1;
-    
+
     uint8_t clock_sys_pll_sys : 1;
     uint8_t clock_sys_pll_usb : 1;
-    
+
     uint8_t clock_sys_psm : 1;
     uint8_t clock_sys_pwm : 1;
-    
+
     uint8_t clock_sys_resets : 1;
-    
+
     uint8_t clock_sys_rom : 1;
     uint8_t clock_sys_rosc : 1;
-    
+
     uint8_t clock_rtc_rtc : 1;
     uint8_t clock_sys_rtc : 1;
-    
+
     uint8_t clock_sys_SIO : 1;
-    
+
     uint8_t clock_peri_SPI0 : 1;
     uint8_t clock_sys_SPI0 : 1;
     uint8_t clock_peri_SPI1 : 1;
     uint8_t clock_sys_SPI1 : 1;
-    
+
     uint8_t clock_sys_sram0 : 1;
     uint8_t clock_sys_sram1 : 1;
     uint8_t clock_sys_sram2 : 1;
@@ -110,8 +113,6 @@ struct pico_register
 
     struct APS_Register status;
     struct special_register special_reg;
-
-    
 };
 
 struct pico_bootrom_vector
@@ -146,7 +147,6 @@ const char *get_register_name(uint32_t id); // for debugging
 
 uint32_t *get_special_register(uint32_t id, struct pico_register *table);
 const char *get_special_register_name(uint32_t id); // for debugging
-
 
 void dump_cpu(const struct pico_cpu *cpu);
 void reset_cpu(struct pico_cpu *cpu);

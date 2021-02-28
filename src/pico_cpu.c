@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "pico_cpu.h"
 #include "pico_apb.h"
+#include "pico_cpu.h"
 #include "pico_rom.h"
 #include "sio_reg.h"
 #include "sram.h"
@@ -91,12 +91,16 @@ const char *get_register_name(uint32_t id)
 }
 const char *get_special_register_name(uint32_t id)
 {
-    if(id < 10&& id != 4){
+    if (id < 10 && id != 4)
+    {
         return special_registers_names[id];
-
-    }else if(id == 16){
+    }
+    else if (id == 16)
+    {
         return "PRIMASK";
-    }else if(id == 20){
+    }
+    else if (id == 20)
+    {
         return "CONTROL";
     }
     return " -- invalid special register -- ";
@@ -106,7 +110,7 @@ uint32_t *get_special_register(uint32_t id, struct pico_register *table)
     if (id < 10 && id != 4)
     {
 
-        return (((uint32_t*)&table->special_reg) + id);
+        return (((uint32_t *)&table->special_reg) + id);
     }
     else if (id == 16)
     {
@@ -121,7 +125,6 @@ uint32_t *get_special_register(uint32_t id, struct pico_register *table)
 
     return NULL;
 }
-
 
 uint8_t fetch_byte(struct pico_cpu *cpu)
 {
@@ -155,7 +158,7 @@ void init_bootrom_table(struct pico_cpu *cpu)
 {
     init_boot_rom_vector(&cpu->bootrom_vec, cpu);
 
-    cpu->registers.SP = cpu->bootrom_vec.initial_stack ;
+    cpu->registers.SP = cpu->bootrom_vec.initial_stack;
     cpu->registers.PC = cpu->bootrom_vec.boot_rom_start - 1;
 
     printf("bootrom table: start = 0x%x stack = 0x%x \n", cpu->registers.PC, cpu->registers.SP);

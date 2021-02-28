@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
         printf("picemu {flags} [utf2_file]\n");
         return -1;
     }
-    
+
     struct pico_cpu pico;
     printf("starting picemu... \n");
 
@@ -23,7 +23,8 @@ int main(int argc, char *argv[])
     reset_cpu(&pico);
     start_cpu(&pico, 0);
 
-    while (run_instruction(&pico) == 0);
+    while (run_instruction(&pico) == 0)
+        ;
 
     stop_cpu(&pico);
     return 0;

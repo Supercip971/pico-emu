@@ -1,6 +1,7 @@
 #include "tst.h"
 #include <stdio.h>
-uint8_t tst_t1(struct raw_instruction instruction, struct pico_cpu *cpu){
+uint8_t tst_t1(struct raw_instruction instruction, struct pico_cpu *cpu)
+{
     uint32_t Rm = (instruction.down & 0b111000) >> 3;
     uint32_t Rn = (instruction.down & 0b111);
 

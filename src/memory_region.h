@@ -1,7 +1,7 @@
 #ifndef MEM_REGION_H
 #define MEM_REGION_H
-#include <stddef.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 #include "config.h"
 #include "pico_cpu.h"
