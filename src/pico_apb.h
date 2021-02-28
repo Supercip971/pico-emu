@@ -9,6 +9,16 @@
 #define REG_TABLE_ENTRY_COUNT sizeof(abp_reg_table) / sizeof(struct APB_raw_Register)
 typedef struct pico_cpu pico_cpu;
 
+#define APB_OFFSET_NORMAL 0x0
+#define APB_OFFSET_XOR (1 << 12)
+#define APB_OFFSET_SET (2 << 12)
+#define APB_OFFSET_CLR (APB_OFFSET_XOR | APB_OFFSET_SET)
+
+#define APB_NORMAL_RW 0
+#define APB_XOR_RW 1
+#define APB_SET_RW 2
+#define APB_CLR_RW 3
+
 #define APB_NU 0b00              // null
 #define APB_RO 0b01              // read only
 #define APB_WO 0b10              // write only

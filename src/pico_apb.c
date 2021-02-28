@@ -12,6 +12,23 @@ struct APB_raw_Register abp_reg_table[] = {
     {"VREG_CHIP_RESET", 0x64000, 0x11, abp_vreg_read, abp_vreg_write},
     {"WATCHDOG", 0x58000, 0x30, watchdog_read, watchdog_write}};
 
+void select_rw_type(int* type, pico_addr* addr){
+    if(*addr & APB_OFFSET_XOR && *addr & APB_OFFSET_SET)
+    {
+        *type = APB_CLR_RW;
+    }
+    else if(*addr & APB_OFFSET_SET)
+    {
+        *type = APB_SET_RW;
+    }
+    else if(*addr & APB_OFFSET_XOR)
+    {
+         *type = APB_XOR_RW;
+    }
+    
+    *addr = *addr & ~(0x3 << 12); // just clear offset bits to use the raw address
+}
+
 int abp_null_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint32_t target, pico_addr addr)
 {
     printf("error: trying write to not writable ABP register: %s at 0x%x \n", self->name, addr);
@@ -126,16 +143,32 @@ int read_abp_32(pico_addr raw_addr, struct pico_cpu *cpu, uint32_t *target, stru
 
 int write_abp_32(pico_addr raw_addr, struct pico_cpu *cpu, const uint32_t target, struct memory_region *self)
 {
+    int rw_type = APB_NORMAL_RW;
+    select_rw_type(&rw_type, &raw_addr);
 
     struct APB_raw_Register *reg = select_register(raw_addr);
 
     if (reg == NULL)
     {
-        printf("invalid ABP write at offset 0x%x \n", raw_addr);
+        printf("invalid ABP write %i at offset 0x%x \n", rw_type, raw_addr);
         return -1;
     }
-
-    return reg->write_handler(reg, cpu, target, raw_addr - reg->base);
+    if(rw_type == APB_NORMAL_RW){
+        return reg->write_handler(reg, cpu, target, raw_addr - reg->base);
+    }else if(rw_type == APB_SET_RW){
+        uint32_t targ = reg->read_handler(reg, cpu, &targ, raw_addr - reg->base);
+        targ |= target;
+        return reg->write_handler(reg, cpu, targ, raw_addr - reg->base);
+    }else if(rw_type == APB_CLR_RW){
+        uint32_t targ = reg->read_handler(reg, cpu, &targ, raw_addr - reg->base);
+        targ = targ & ~(target);
+        return reg->write_handler(reg, cpu, targ, raw_addr - reg->base);
+    }else if(rw_type == APB_XOR_RW){
+        uint32_t targ = reg->read_handler(reg, cpu, &targ, raw_addr - reg->base);
+        targ = targ ^ (target);
+        return reg->write_handler(reg, cpu, targ, raw_addr - reg->base);
+    }
+    return -1;
 }
 
 int init_apb(struct pico_cpu *cpu)
