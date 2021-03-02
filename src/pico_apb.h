@@ -49,6 +49,10 @@ int abp_clock0_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const 
 int watchdog_read(struct APB_raw_Register *self, struct pico_cpu *cpu, uint32_t *target, pico_addr addr);
 int watchdog_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint32_t target, pico_addr addr);
 
+int reset_read(struct APB_raw_Register *self, struct pico_cpu *cpu, uint32_t *target, pico_addr addr);
+int reset_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint32_t target, pico_addr addr);
+
+
 struct APB_raw_Register *select_register(pico_addr addr);
 int read_abp_32(pico_addr raw_addr, struct pico_cpu *cpu, uint32_t *target, struct memory_region *self);
 int write_abp_32(pico_addr raw_addr, struct pico_cpu *cpu, const uint32_t target, struct memory_region *self);

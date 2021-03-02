@@ -74,6 +74,39 @@ struct APB_watchdog_tick_register
     uint32_t reserved : 12;
 } __attribute__((packed));
 
+struct reset_control_register{
+    uint8_t reset_adc : 1;
+    uint8_t reset_bus_ctrl : 1;
+    uint8_t reset_dma : 1;
+    uint8_t reset_i2c0 : 1;
+    uint8_t reset_i2c1 : 1;
+    uint8_t reset_IObank0 : 1;
+    uint8_t reset_IOqspi : 1;
+    uint8_t reset_jtag : 1;
+    uint8_t reset_pads_bank0 : 1;
+    uint8_t reset_pads_qspi : 1;
+    uint8_t reset_pio0 : 1;
+    uint8_t reset_pio1 : 1;
+    uint8_t reset_pll_sys : 1;
+    uint8_t reset_pll_usb : 1;
+    uint8_t reset_pwm : 1;
+    uint8_t reset_rtc : 1;
+    uint8_t reset_spi0 : 1;
+    uint8_t reset_spi1 : 1;
+    uint8_t reset_syscfg : 1;
+    uint8_t reset_sysinfo : 1;
+    uint8_t reset_tbman : 1;
+    uint8_t reset_timer : 1;
+    uint8_t reset_uart0 : 1;
+    uint8_t reset_uart1 : 1;
+    uint8_t reset_usbctrl : 1;
+    uint16_t reserved_7 : 7;
+}__attribute__((packed));
+struct APB_reset_register{
+    struct reset_control_register reset;
+    struct reset_control_register wdsel; // watch dog select
+    struct reset_control_register reset_done; // watch dog select
+}__attribute__((packed));
 struct APB_Voltage_register
 {
     struct APB_Voltage_register_ctrl_status control_status;
@@ -104,5 +137,6 @@ struct APB_registers
     struct APB_syscfg_register syscfg_reg;
     struct APB_Voltage_register voltage_reg;
     struct APB_watchdog_register watchdog_reg;
+    struct APB_reset_register reset_reg; // 0x4000c000
 };
 #endif
