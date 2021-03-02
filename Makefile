@@ -26,12 +26,12 @@ GCC_FLAGS := \
 $(BUILD_PATH)/%.o: %.c $(CFILES) $(HFILES)
 	@$(DIR_GUARD)
 	@echo " [ C ] $<"
-	@gcc -c $(GCC_FLAGS) $(SANITIZER) -o $@ $<
+	@clang -c $(GCC_FLAGS) $(SANITIZER) -o $@ $<
 
 $(OUTPUT): $(OBJFILES)
 	@$(DIR_GUARD)
 	@echo " [ picemu ] $(OUTPUT) "
-	@gcc $(OBJFILES) $(SANITIZER) -pthread -o $(OUTPUT)
+	@clang $(OBJFILES) $(SANITIZER) -pthread -o $(OUTPUT)
 
 
 clean: 
