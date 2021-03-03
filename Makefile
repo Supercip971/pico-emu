@@ -6,7 +6,7 @@ CFILES := $(shell find $(PROJECT_DIR) -type f -name *.c)
 HFILES := $(shell find $(PROJECT_DIR) -type f -name *.h)
 
 OBJFILES := $(patsubst %.c, $(BUILD_PATH)/%.o, $(CFILES))
-OUTPUT := $(BUILD_PATH)/picemu
+OUTPUT := $(BUILD_PATH)/pico-emu
 
 SANITIZER := \
 	-fsanitize=address \
@@ -30,7 +30,7 @@ $(BUILD_PATH)/%.o: %.c $(CFILES) $(HFILES)
 
 $(OUTPUT): $(OBJFILES)
 	@$(DIR_GUARD)
-	@echo " [ picemu ] $(OUTPUT) "
+	@echo " [ pico-emu ] $(OUTPUT) "
 	@clang $(OBJFILES) $(SANITIZER) -pthread -o $(OUTPUT)
 
 

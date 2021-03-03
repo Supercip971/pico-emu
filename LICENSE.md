@@ -2,7 +2,7 @@
 
 **NOTE: this license applies to the contents of this repository, EXCLUDING the contents of the files hello_world.uf2 and bootrom , which are licensed by raspberrypi**
 
-## picemu license:
+## pico-emu license:
 
 BSD 2-Clause License
 

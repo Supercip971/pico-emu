@@ -1,4 +1,4 @@
-# PICEMU
+# PICO-EMU
 
 a little raspberry pi pico emulator 
 
