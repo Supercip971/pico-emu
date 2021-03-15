@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <stdio.h>
 
 uint32_t add_with_carry(uint32_t x, uint32_t y, bool carry, struct add_with_carry_result *target)
 {
