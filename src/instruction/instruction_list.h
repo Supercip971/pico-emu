@@ -7,6 +7,7 @@
 #include "bx.h"
 #include "cmp.h"
 #include "ld.h"
+#include "lsls.h"
 #include "mov.h"
 #include "msr.h"
 #include "push.h"
