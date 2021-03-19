@@ -1,4 +1,5 @@
 #include "mov.h"
+#include "utils.h"
 
 #include <stdio.h>
 // use the same variable name from the arm documentation
@@ -19,6 +20,28 @@ uint8_t mov_instruction_t1(struct raw_instruction instruction, struct pico_cpu *
     *target = *result;
 
     printf("mov %s %s \n", get_register_name(d), get_register_name(m));
+    return 0;
+}
+
+uint8_t mov_instruction_t2(struct raw_instruction instruction, struct pico_cpu *cpu)
+{
+    uint8_t Rd = instruction.down & 0b111;
+    uint8_t Rm = (instruction.down & 0b111000) >> 3;
+    uint32_t d = Rd;
+    uint32_t m = Rm;
+    uint32_t *result = get_register(m, &cpu->registers);
+    uint32_t *target = get_register(d, &cpu->registers);
+    if (result == NULL || target == NULL)
+    {
+        printf("invalid mov register for id %i -> %i", m, d);
+        return 2;
+    }
+    *target = *result;
+
+    cpu->registers.status.zero_condition = (*result == 0);
+    cpu->registers.status.negative_condition =  bit_get(*result, 31);
+
+    printf("(lsls) mov %s, %s \n", get_register_name(d), get_register_name(m));
     return 0;
 }
 
