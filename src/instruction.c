@@ -140,6 +140,11 @@ uint8_t run_instruction(struct pico_cpu *cpu)
     {
         return lsls_immediate_t1(raw_instruction, cpu);
     }
+    // subs t2
+    else if ((second & 0b11111000) == 0b00111000)
+    {
+        return sub_immediate_t2(raw_instruction, cpu);
+    }
     // 32bit instruction
     else if ((second & 0b11100000) == 0b11100000)
     { // 32bit instruction

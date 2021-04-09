@@ -12,6 +12,7 @@
 #include "msr.h"
 #include "push.h"
 #include "str.h"
+#include "sub.h"
 #include "tst.h"
 #include <stdbool.h>
 
