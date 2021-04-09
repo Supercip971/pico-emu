@@ -95,6 +95,11 @@ uint8_t run_instruction(struct pico_cpu *cpu)
     {
         return ldr_immediate_instruction(raw_instruction, cpu);
     }
+    // LDRB (immediate) instruction
+    else if ((second & 0b11111000) == 0b01111000)
+    {
+        return ldrb_t1_instruction(raw_instruction, cpu);
+    }
     // LDM
     else if ((second & 0b11111000) == 0b11001000)
     {
