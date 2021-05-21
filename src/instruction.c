@@ -46,6 +46,10 @@ uint8_t run_data_processing_instruction(struct pico_cpu *cpu, struct raw_instruc
 
         return mvns_instruction_t1(instruction, cpu);
     }
+    else if ((raw_opcode & 0b1111) == 0b1100)
+    {
+        return ORRS_instruction_t1(instruction, cpu);
+    }
     else if ((raw_opcode & 0b1111) == 0b1010)
     {
 
