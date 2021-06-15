@@ -26,12 +26,26 @@ int cpuid_read(struct SIO_Register *self, struct pico_cpu *cpu, uint32_t *target
 int read_sio_32(pico_addr raw_addr, struct pico_cpu *cpu, uint32_t *target, struct memory_region *self)
 {
     uint32_t target_register = raw_addr / 4;
+
+    if (target_register >= (sizeof(reg_table) / sizeof(reg_table[0])))
+    {
+        printf("invalid sio read at offset %x \n", raw_addr);
+        return -1;
+    }
+
     return reg_table[target_register].read_handler(&reg_table[target_register], cpu, target) == 0;
 }
 
 int write_sio_32(pico_addr raw_addr, struct pico_cpu *cpu, const uint32_t target, struct memory_region *self)
 {
+
     uint32_t target_register = raw_addr / 4;
+
+    if (target_register > (sizeof(reg_table) / sizeof(reg_table[0])))
+    {
+        printf("invalid sio write at offset %x \n", raw_addr);
+        return -1;
+    }
     return reg_table[target_register].write_handler(&reg_table[target_register], cpu, target) == 0;
 }
 
