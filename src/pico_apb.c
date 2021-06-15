@@ -9,24 +9,26 @@ struct APB_raw_Register abp_reg_table[] = {
     {"SYSINFO", 0, 0x44, abp_null_read, abp_null_write},
     {"SYSCFG", 0x4000, 0x19, abp_syscfg_read, abp_syscfg_write},
     {"CLOCK_REG", 0x80a0, 0x4, abp_clock0_read, abp_clock0_write},
-    {"RESET_REG", 0xc000, 0x16,reset_read, reset_write },
+    {"RESET_REG", 0xc000, 0x16, reset_read, reset_write},
     {"VREG_CHIP_RESET", 0x64000, 0x11, abp_vreg_read, abp_vreg_write},
+    {"TBMAN", 0x6c000, 0x4, tbman_read, NULL},
     {"WATCHDOG", 0x58000, 0x30, watchdog_read, watchdog_write}};
 
-void select_rw_type(int* type, pico_addr* addr){
-    if(*addr & APB_OFFSET_XOR && *addr & APB_OFFSET_SET)
+void select_rw_type(int *type, pico_addr *addr)
+{
+    if (*addr & APB_OFFSET_XOR && *addr & APB_OFFSET_SET)
     {
         *type = APB_CLR_RW;
     }
-    else if(*addr & APB_OFFSET_SET)
+    else if (*addr & APB_OFFSET_SET)
     {
         *type = APB_SET_RW;
     }
-    else if(*addr & APB_OFFSET_XOR)
+    else if (*addr & APB_OFFSET_XOR)
     {
-         *type = APB_XOR_RW;
+        *type = APB_XOR_RW;
     }
-    
+
     *addr = *addr & ~(0x3 << 12); // just clear offset bits to use the raw address
 }
 
@@ -115,6 +117,7 @@ int watchdog_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const ui
 
     return 0;
 }
+
 int reset_read(struct APB_raw_Register *self, struct pico_cpu *cpu, uint32_t *target, pico_addr addr)
 {
     uint8_t *data = (uint8_t *)&cpu->apb_register.reset_reg;
@@ -129,6 +132,13 @@ int reset_write(struct APB_raw_Register *self, struct pico_cpu *cpu, const uint3
     uint8_t *data = (uint8_t *)&cpu->apb_register.reset_reg;
     data += addr;
     *((uint32_t *)data) = target;
+
+    return 0;
+}
+
+int tbman_read(struct APB_raw_Register *self, struct pico_cpu *cpu, uint32_t *target, pico_addr addr)
+{
+    *target = 0;
 
     return 0;
 }
@@ -171,17 +181,24 @@ int write_abp_32(pico_addr raw_addr, struct pico_cpu *cpu, const uint32_t target
         printf("invalid ABP write %i at offset 0x%x \n", rw_type, raw_addr);
         return -1;
     }
-    if(rw_type == APB_NORMAL_RW){
+    if (rw_type == APB_NORMAL_RW)
+    {
         return reg->write_handler(reg, cpu, target, raw_addr - reg->base);
-    }else if(rw_type == APB_SET_RW){
+    }
+    else if (rw_type == APB_SET_RW)
+    {
         uint32_t targ = reg->read_handler(reg, cpu, &targ, raw_addr - reg->base);
         targ |= target;
         return reg->write_handler(reg, cpu, targ, raw_addr - reg->base);
-    }else if(rw_type == APB_CLR_RW){
+    }
+    else if (rw_type == APB_CLR_RW)
+    {
         uint32_t targ = reg->read_handler(reg, cpu, &targ, raw_addr - reg->base);
         targ = targ & ~(target);
         return reg->write_handler(reg, cpu, targ, raw_addr - reg->base);
-    }else if(rw_type == APB_XOR_RW){
+    }
+    else if (rw_type == APB_XOR_RW)
+    {
         uint32_t targ = reg->read_handler(reg, cpu, &targ, raw_addr - reg->base);
         targ = targ ^ (target);
         return reg->write_handler(reg, cpu, targ, raw_addr - reg->base);
