@@ -89,6 +89,7 @@ uint8_t run_instruction(struct pico_cpu *cpu)
     raw_instruction.up = second;
     raw_instruction.down = first;
     raw_instruction.raw_instruction = instruction;
+    printf("{%x} \n ", raw_instruction.raw_instruction);
     // LDR (literal) instruction
     if ((second & 0b11111000) == 0b01001000)
     {
@@ -153,6 +154,11 @@ uint8_t run_instruction(struct pico_cpu *cpu)
     else if ((second & 0b11111000) == 0b00111000)
     {
         return sub_immediate_t2(raw_instruction, cpu);
+    }
+    // adds t1
+    else if ((second & 0b11111110) == 0b00011100)
+    {
+        return adds_immediate_t1(raw_instruction, cpu);
     }
     // 32bit instruction
     else if ((second & 0b11100000) == 0b11100000)
