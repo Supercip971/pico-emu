@@ -5,13 +5,13 @@ uint8_t B_instruction_t1(struct raw_instruction instruction, struct pico_cpu *cp
 {
 
     uint8_t condition = instruction.up & 0b1111;
-    uint32_t target_addr = (instruction.down << 1);
+    int32_t target_addr = ((int8_t)instruction.down) * 2;
 
-    target_addr += 2;
     int res = is_condition_met(condition, cpu->registers.status);
     if (res == 1)
     {
-        cpu->registers.PC += target_addr;
+        cpu->registers.PC += target_addr + 2;
+        cpu->registers.PC &= (uint32_t) ~(1);
     }
     else if (res < 0)
     {
@@ -19,6 +19,6 @@ uint8_t B_instruction_t1(struct raw_instruction instruction, struct pico_cpu *cp
         return 1; // error
     }
 
-    printf("B%i 0x%x = %i \n", condition, target_addr, res);
+    printf("B%i 0x%x = %i ; %x \n", condition, target_addr, res, cpu->registers.PC);
     return 0;
 }

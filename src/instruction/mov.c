@@ -17,7 +17,15 @@ uint8_t mov_instruction_t1(struct raw_instruction instruction, struct pico_cpu *
         printf("invalid mov register for id %i -> %i", m, d);
         return 2;
     }
-    *target = *result;
+
+    if (Rm == 15)
+    {
+        *target = *result + 2; //
+    }
+    else
+    {
+        *target = *result; //
+    }
 
     printf("mov %s %s \n", get_register_name(d), get_register_name(m));
     return 0;

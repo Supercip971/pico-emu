@@ -8,7 +8,7 @@ uint8_t BX_instruction_t1(struct raw_instruction instruction, struct pico_cpu *c
     {
         return 1;
     }
-    cpu->registers.PC = *get_register(m, &cpu->registers);
+    cpu->registers.PC = (~(1)) & *get_register(m, &cpu->registers);
     printf("BX PC, %s \n", get_register_name(m));
 
     return 0;
