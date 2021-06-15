@@ -75,18 +75,19 @@ uint8_t ldm_t1_instruction(struct raw_instruction instruction, struct pico_cpu *
     printf("} \n");
     return 0;
 }
-uint8_t ldrb_t1_instruction(struct raw_instruction instruction, struct pico_cpu *cpu){
+uint8_t ldrb_t1_instruction(struct raw_instruction instruction, struct pico_cpu *cpu)
+{
     uint16_t t = instruction.down & 0b111;
     uint16_t n = (instruction.down & 0b111000) >> 3;
     uint32_t imm32 = (instruction.raw_instruction & 0b11111000000) >> 6;
-    
-    uint32_t* Rt = get_register(t, &cpu->registers);
-    uint32_t* Rn = get_register(n, &cpu->registers);
-    
+
+    uint32_t *Rt = get_register(t, &cpu->registers);
+    uint32_t *Rn = get_register(n, &cpu->registers);
+
     uint32_t offset = (*Rn) + imm32;
     uint8_t res = 0;
     read_memory_byte(cpu, &res, offset);
-    *Rt =(uint32_t)res ;
+    *Rt = (uint32_t)res;
 
     printf("ldrb %s, [%s, +%i] \n", get_register_name(t), get_register_name(n), imm32);
     return 0;

@@ -39,7 +39,7 @@ uint8_t mov_instruction_t2(struct raw_instruction instruction, struct pico_cpu *
     *target = *result;
 
     cpu->registers.status.zero_condition = (*result == 0);
-    cpu->registers.status.negative_condition =  bit_get(*result, 31);
+    cpu->registers.status.negative_condition = bit_get(*result, 31);
 
     printf("(lsls) mov %s, %s \n", get_register_name(d), get_register_name(m));
     return 0;
