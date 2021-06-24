@@ -5,15 +5,16 @@
 // run Special data instruction and Branch and Exchange
 uint8_t run_SdiBE_instruction(struct pico_cpu *cpu, struct raw_instruction instruction)
 {
-    uint8_t raw_opcode = (instruction.raw_instruction & 0b1111000000) >> 6;
-    if ((raw_opcode & 0b1100) == 0b1000)
+    if ((instruction.up & 0b11) == 0b10)
     {
         return mov_instruction_t1(instruction, cpu);
     }
-    else if ((raw_opcode & 0b1110) == 0b1100)
+    else if (((instruction.up & 0b11) == 0b11) && (instruction.down & 0b10000000) == 0b00000000)
     {
         return BX_instruction_t1(instruction, cpu);
     }
+    // TODO: fix this
+    /*
     else if ((raw_opcode & 0b1110) == 0b1110)
     {
         // branch with link and Exchange
@@ -30,6 +31,7 @@ uint8_t run_SdiBE_instruction(struct pico_cpu *cpu, struct raw_instruction instr
     {
         // compare 2
     }
+*/
 
     printf("invalid special data  instruction or branch and exchange %x at %x \n ", instruction.raw_instruction, cpu->registers.PC - 2);
     return 1;
