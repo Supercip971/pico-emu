@@ -130,9 +130,13 @@ uint8_t fetch_byte(struct pico_cpu *cpu)
 {
     uint8_t result;
 
-    read_memory_byte(cpu, &result, cpu->registers.PC);
+    int mem_result = read_memory_byte(cpu, &result, cpu->registers.PC);
     cpu->registers.PC += 1;
 
+    if (mem_result != 0)
+    {
+        return -1;
+    }
     return result;
 }
 

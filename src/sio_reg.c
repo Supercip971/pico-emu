@@ -33,7 +33,7 @@ int read_sio_32(pico_addr raw_addr, struct pico_cpu *cpu, uint32_t *target, stru
         return -1;
     }
 
-    return reg_table[target_register].read_handler(&reg_table[target_register], cpu, target) == 0;
+    return reg_table[target_register].read_handler(&reg_table[target_register], cpu, target) != 0;
 }
 
 int write_sio_32(pico_addr raw_addr, struct pico_cpu *cpu, const uint32_t target, struct memory_region *self)
@@ -46,7 +46,7 @@ int write_sio_32(pico_addr raw_addr, struct pico_cpu *cpu, const uint32_t target
         printf("invalid sio write at offset %x \n", raw_addr);
         return -1;
     }
-    return reg_table[target_register].write_handler(&reg_table[target_register], cpu, target) == 0;
+    return reg_table[target_register].write_handler(&reg_table[target_register], cpu, target) != 0;
 }
 
 int init_sio(struct pico_cpu *cpu)

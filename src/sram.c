@@ -59,19 +59,19 @@ int write_sram_8(pico_addr addr, struct pico_cpu *cpu, const uint8_t target, str
 {
     uint8_t *v = (uint8_t *)(self->data + (addr));
     *v = target;
-    return 1;
+    return 0;
 }
 
 int write_sram_16(pico_addr addr, struct pico_cpu *cpu, const uint16_t target, struct memory_region *self)
 {
     uint16_t *v = (uint16_t *)(self->data + (addr));
     *v = target;
-    return 1;
+    return 0;
 }
 
 int write_sram_32(pico_addr addr, struct pico_cpu *cpu, const uint32_t target, struct memory_region *self)
 {
     uint32_t *v = (uint32_t *)(self->data + (addr));
     *v = target;
-    return 1;
+    return 0;
 }

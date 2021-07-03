@@ -96,7 +96,10 @@ bool init_boot_rom_vector(struct pico_bootrom_vector *target, struct pico_cpu *c
 
     for (uint32_t i = 0; i < length_to_read; i++)
     {
-        read_memory_byte(cpu, raw_target + i, i);
+        if (read_memory_byte(cpu, raw_target + i, i) != 0)
+        {
+            return 0;
+        }
     }
 
     memcpy(target, raw_target, length_to_read);

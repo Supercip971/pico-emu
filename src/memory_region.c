@@ -56,7 +56,7 @@ int read_memory_region_8(struct memory_region *region, uint8_t *target, pico_add
 {
     if (region->can_read)
     {
-        region->read8(addr, cpu, target, region);
+        return region->read8(addr, cpu, target, region);
     }
 
     else
@@ -72,7 +72,7 @@ int read_memory_region_16(struct memory_region *region, uint16_t *target, pico_a
 {
     if (region->can_read)
     {
-        region->read16(addr, cpu, target, region);
+        return region->read16(addr, cpu, target, region);
     }
 
     else
@@ -88,7 +88,7 @@ int read_memory_region_32(struct memory_region *region, uint32_t *target, pico_a
 {
     if (region->can_read)
     {
-        region->read32(addr, cpu, target, region);
+        return region->read32(addr, cpu, target, region);
     }
 
     else
@@ -104,7 +104,7 @@ int write_memory_region_8(struct memory_region *region, uint8_t target, pico_add
 {
     if (region->can_write)
     {
-        region->write8(addr, cpu, target, region);
+        return region->write8(addr, cpu, target, region);
     }
 
     else
@@ -120,7 +120,7 @@ int write_memory_region_16(struct memory_region *region, uint16_t target, pico_a
 {
     if (region->can_write)
     {
-        region->write16(addr, cpu, target, region);
+        return region->write16(addr, cpu, target, region);
     }
 
     else
@@ -136,7 +136,7 @@ int write_memory_region_32(struct memory_region *region, uint32_t target, pico_a
 {
     if (region->can_write)
     {
-        region->write32(addr, cpu, target, region);
+        return region->write32(addr, cpu, target, region);
     }
 
     else

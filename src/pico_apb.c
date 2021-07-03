@@ -166,7 +166,13 @@ int read_abp_32(pico_addr raw_addr, struct pico_cpu *cpu, uint32_t *target, stru
         return -1;
     }
 
-    return reg->read_handler(reg, cpu, target, raw_addr - reg->base);
+    printf("reading abp %x \n", raw_addr);
+
+    int res = reg->read_handler(reg, cpu, target, raw_addr - reg->base);
+
+    printf("result: %x \n", *target);
+
+    return res;
 }
 
 int write_abp_32(pico_addr raw_addr, struct pico_cpu *cpu, const uint32_t target, struct memory_region *self)
