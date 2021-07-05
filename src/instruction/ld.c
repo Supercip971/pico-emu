@@ -9,11 +9,9 @@ uint8_t ldr_litteral_instruction(struct raw_instruction instruction, struct pico
 
     uint32_t base = ((cpu->registers.PC + 2) & 0xfffffffc);
     uint32_t addr = (base + end_value);
-
-    read_memory_dword(cpu, &cpu->registers.R_register[target_register], addr);
     printf("ldr %s [PC, #%i] ; 0x%x \n", get_register_name(target_register), end_value, addr);
 
-    return 0;
+    return read_memory_dword(cpu, &cpu->registers.R_register[target_register], addr);
 }
 uint8_t ldr_immediate_instruction(struct raw_instruction instruction, struct pico_cpu *cpu)
 {
@@ -23,10 +21,9 @@ uint8_t ldr_immediate_instruction(struct raw_instruction instruction, struct pic
     uint32_t imm32 = (instruction.raw_instruction & 0b11111000000) >> 6;
     imm32 *= 4; // dword aligned
     uint32_t offset_addr = cpu->registers.R_register[base_register] + imm32;
-    read_memory_dword(cpu, &cpu->registers.R_register[destination_register], offset_addr);
-
     printf("ldr immediate instruction: R%i -> R%i  with offset 0x%x final addr: 0x%x = 0x%x\n", base_register, destination_register, imm32, offset_addr, cpu->registers.R_register[destination_register]);
-    return 0;
+
+    return read_memory_dword(cpu, &cpu->registers.R_register[destination_register], offset_addr);
 }
 uint8_t ldm_t1_instruction(struct raw_instruction instruction, struct pico_cpu *cpu)
 {
@@ -52,7 +49,11 @@ uint8_t ldm_t1_instruction(struct raw_instruction instruction, struct pico_cpu *
 
             write_count++;
             uint32_t *target = get_register(i, &cpu->registers);
-            read_memory_dword(cpu, target, addr);
+            if (read_memory_dword(cpu, target, addr) != 0)
+            {
+                return -1;
+            }
+
             addr += 4;
         }
     }
@@ -86,9 +87,9 @@ uint8_t ldrb_t1_instruction(struct raw_instruction instruction, struct pico_cpu 
 
     uint32_t offset = (*Rn) + imm32;
     uint8_t res = 0;
-    read_memory_byte(cpu, &res, offset);
+    int mem_result = read_memory_byte(cpu, &res, offset);
     *Rt = (uint32_t)res;
 
     printf("ldrb %s, [%s, +%i] \n", get_register_name(t), get_register_name(n), imm32);
-    return 0;
+    return mem_result;
 }
