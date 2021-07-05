@@ -6,3 +6,4 @@ note: The project uses the provided bootrom from raspberry pi at the repo: https
 
 ## using:
 - https://developer.arm.com/documentation/ddi0419/d/
+- https://datasheets.raspberrypi.org/rp2040/rp2040-datasheet.pdf
