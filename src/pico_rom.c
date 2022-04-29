@@ -92,12 +92,13 @@ int init_rom(struct pico_cpu *cpu)
 bool init_boot_rom_vector(struct pico_bootrom_vector *target, struct pico_cpu *cpu)
 {
     size_t length_to_read = sizeof(struct pico_bootrom_vector);
-    uint8_t *raw_target = malloc(sizeof(struct pico_bootrom_vector));
+	uint8_t *raw_target = malloc(sizeof(struct pico_bootrom_vector));
 
     for (uint32_t i = 0; i < length_to_read; i++)
     {
         if (read_memory_byte(cpu, raw_target + i, i) != 0)
         {
+			free(raw_target);
             return 0;
         }
     }
